@@ -35,38 +35,19 @@ shinyServer(function(input, output,session) {
     })
   })
   
-  observeEvent(input$myswiper == "You swiped right",{
-    ind = button_func(button=1,file_path,values)
-    output$title = renderText(dat$titles[ind])
-    output$abstract = renderText(dat$abstracts[ind])
-    output$authors = renderText(dat$authors[ind])
-    output$link = renderUI({
-      a(href=dat$links[ind],dat$links[ind])
-    })
-  })
-  
-  observeEvent(input$myswiper == "You swiped up",{
-    ind = button_func(button=2,file_path,values)
-    output$title = renderText(dat$titles[ind])
-    output$abstract = renderText(dat$abstracts[ind])
-    output$authors = renderText(dat$authors[ind])
-    output$link = renderUI({
-      a(href=dat$links[ind],dat$links[ind])
-    })
-  })
-  
-  observeEvent(input$myswiper == "You swiped down",{
-    ind = button_func(button=3,file_path,values)
-    output$title = renderText(dat$titles[ind])
-    output$abstract = renderText(dat$abstracts[ind])
-    output$authors = renderText(dat$authors[ind])
-    output$link = renderUI({
-      a(href=dat$links[ind],dat$links[ind])
-    })
-  })
-  
-  observeEvent(input$swiper == "You swiped left",{
-    ind = button_func(button=4,file_path,values)
+  observeEvent(input$myswiper,{
+    choice = gsub("The last preprint was: ", "", input$myswiper)
+    
+    if(choice == "exciting and correct"){
+      ind = button_func(button=1,file_path,values)
+    } else if(choice == "exciting and questionable"){
+      ind = button_func(button=2,file_path,values)
+    } else if(choice == "boring and correct"){
+      ind = button_func(button=3,file_path,values)
+    } else{
+      ind = button_func(button=4,file_path,values)
+    }
+    
     output$title = renderText(dat$titles[ind])
     output$abstract = renderText(dat$abstracts[ind])
     output$authors = renderText(dat$authors[ind])
