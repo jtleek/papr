@@ -35,7 +35,7 @@ shinyServer(function(input, output,session) {
     })
   })
   
-  observeEvent(input$excite_correct,{
+  observeEvent(input$myswiper == "You swiped right",{
     ind = button_func(button=1,file_path,values)
     output$title = renderText(dat$titles[ind])
     output$abstract = renderText(dat$abstracts[ind])
@@ -45,7 +45,7 @@ shinyServer(function(input, output,session) {
     })
   })
   
-  observeEvent(input$excite_question,{
+  observeEvent(input$myswiper == "You swiped up",{
     ind = button_func(button=2,file_path,values)
     output$title = renderText(dat$titles[ind])
     output$abstract = renderText(dat$abstracts[ind])
@@ -55,7 +55,7 @@ shinyServer(function(input, output,session) {
     })
   })
   
-  observeEvent(input$boring_correct,{
+  observeEvent(input$myswiper == "You swiped down",{
     ind = button_func(button=3,file_path,values)
     output$title = renderText(dat$titles[ind])
     output$abstract = renderText(dat$abstracts[ind])
@@ -65,7 +65,7 @@ shinyServer(function(input, output,session) {
     })
   })
   
-  observeEvent(input$boring_question,{
+  observeEvent(input$swiper == "You swiped left",{
     ind = button_func(button=4,file_path,values)
     output$title = renderText(dat$titles[ind])
     output$abstract = renderText(dat$abstracts[ind])

@@ -2,22 +2,44 @@ library(shiny)
 library(markdown)
 library(shinythemes)
 
+swiperButton <- function(inputId, value = "") {
+  tagList(
+    singleton(tags$head(
+      tags$script(src="touchSwipe.js"),
+      tags$script(src="shinySwiper.js")
+    )),
+    tags$button(id = inputId,
+                class = "swiper btn-default",
+                type = "button",
+                as.character(value))
+  )
+}
 
 navbarPage(title="papr",
            tabPanel("Rate",
             sidebarLayout(
               sidebarPanel(
                 h3("Rate the paper"),
-                actionButton("excite_correct", "Exciting and Correct",
-                             icon=icon("star",lib="glyphicon"),width='200px'),
-                actionButton("excite_question", "Exciting and Questionable",
-                             icon=icon("volume-up",lib="glyphicon"),width='200px'),
-                actionButton("boring_correct", "Boring and Correct",
-                             icon=icon("ok",lib="glyphicon"),width='200px'),
-                actionButton("boring_question", "Boring and Questionable",
-                             icon=icon("trash",lib="glyphicon"),width='200px'),
-                actionButton("skip", "Unsure - skip paper",
-                             icon=icon("question"),width='200px'),
+                h4(span(tagList("Swipe Right", icon("arrow-right")))),
+                em(span(tagList(icon("star"),"Exciting and Correct"))),
+                h4(span(tagList("Swipe Up", icon("arrow-up")))),
+                em(span(tagList(icon("volume-up"),"Exciting and Questionable"))),
+                h4(span(tagList("Swipe Down", icon("arrow-down")))),
+                em(span(tagList(icon("ok",lib="glyphicon"),"Boring and Correct"))),
+                h4(span(tagList("Swipe Left", icon("arrow-left")))),
+                em(span(tagList(icon("trash"),"Boring and Questionable"))),
+                # actionButton("excite_correct", "Exciting and Correct",
+                #              icon=icon("star",lib="glyphicon"),width='200px'),
+                # actionButton("excite_question", "Exciting and Questionable",
+                #              icon=icon("volume-up",lib="glyphicon"),width='200px'),
+                # actionButton("boring_correct", "Boring and Correct",
+                #              icon=icon("ok",lib="glyphicon"),width='200px'),
+                # actionButton("boring_question", "Boring and Questionable",
+                #              icon=icon("trash",lib="glyphicon"),width='200px'),
+                 actionButton("skip", "Unsure - skip paper",
+                              icon=icon("question"),width='200px'),
+                h3(""),
+                swiperButton("myswiper"),
                 h3("Rate papers & level up:"),
                 uiOutput("icon"),
                 em(textOutput("level")),
