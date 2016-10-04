@@ -1,0 +1,5 @@
+papa-drop.rds
+*.rds
+.DS_Store
+.Rhistory
+.Rprofile
