@@ -5,22 +5,21 @@ library(rdrop2)
 library(tidyr)
 library(dplyr)
 
-dat <- read_csv("./full_biorxiv_data.csv")
+dat   <- read_csv("./full_biorxiv_data.csv")
 token <- readRDS("./papr-drop.rds")
 session_id <-  as.numeric(Sys.time())
-
 
 shinyServer(function(input, output,session) {
   level_up = 2
   npapers = dim(dat)[1]
   
   file_path <- file.path(tempdir(), paste0(round(session_id),".csv"))
-  values = reactiveValues()
-  values$user_dat <- data.frame(index = NA,
-                                title = NA,
-                                link = NA,
+  values = reactiveValues(count = -1)
+  values$user_dat <- data.frame(index   = NA,
+                                title   = NA,
+                                link    = NA,
                                 session = NA,
-                                result = NA) 
+                                result  = NA)
   
   write_csv(isolate(values$user_dat),file_path)
   
@@ -35,6 +34,7 @@ shinyServer(function(input, output,session) {
     })
   })
   
+  
   observeEvent(input$myswiper,{
     choice = gsub("The last preprint was: ", "", input$myswiper)
     
@@ -48,13 +48,16 @@ shinyServer(function(input, output,session) {
       ind = button_func(button=4,file_path,values)
     }
     
+    values$count = values$count + 1
     output$title = renderText(dat$titles[ind])
     output$abstract = renderText(dat$abstracts[ind])
     output$authors = renderText(dat$authors[ind])
     output$link = renderUI({
       a(href=dat$links[ind],dat$links[ind])
+    
     })
   })
+  
   
   observeEvent(input$skip,{
     ind = button_func(button=5,file_path,values)
@@ -67,22 +70,21 @@ shinyServer(function(input, output,session) {
   })
   
   react2 <- reactive({
-    buttons = c(input$excite_correct,
-                input$excite_question,
-                input$boring_correct,
-                input$boring_question,
-                input$skip)
-    return(sum(buttons))
+     buttons = c(values$count,
+                 input$skip)
+     return(sum(buttons))
   })
   
   
   output$level = renderText(level_func(react2(),level_up))
   output$icon = renderUI(icon_func(react2(),level_up))
+  #####
+  output$test = renderText(react2())
   
   output$download_data <- downloadHandler(
     filename = "my_ratings.csv",
     content = function(file) {
-      udat = values$user_dat %>% 
+      udat = values$user_dat %>%
         separate(result,into=c("exciting","questionable"),sep="_") %>%
         transmute(title,link,exciting,questionable,session) %>%
         mutate(user_id = session) %>% select(-session)
@@ -93,8 +95,11 @@ shinyServer(function(input, output,session) {
 
 
 button_func <- function(button_val,file_path,values){
-  button_names <- c("excite_correct","excite_question",
-                    "boring_correct","boring_question","skipped_unsure")
+  button_names <- c("excite_correct",
+                    "excite_question",
+                    "boring_correct",
+                    "boring_question",
+                    "skipped_unsure")
   vals = 1:dim(dat)[1]
   new_ind = sample(vals[-isolate(values$user_dat$index)],1)
   click_number = dim(isolate(values$user_dat))[1]
@@ -103,7 +108,7 @@ button_func <- function(button_val,file_path,values){
                        title = dat$titles[new_ind],
                        link = dat$links[new_ind],
                        session = session_id,
-                       result = NA) 
+                       result = NA)
   values$user_dat <- rbind(values$user_dat,new_row)
   write_csv(isolate(values$user_dat),file_path)
   drop_upload(file_path,
@@ -119,14 +124,13 @@ initial_func <- function(file_path,values){
                                 title = dat$titles[ind],
                                 link = dat$links[ind],
                                 session = session_id,
-                                result = NA) 
+                                result = NA)
   write_csv(values$user_dat,file_path)
   drop_upload(file_path,
               "shiny/2016/papr/",
               dtoken = token)
   return(list(ind=ind,values=values))
 }
-
 
 
 level_func = function(x,level_up){
@@ -156,5 +160,3 @@ icon_func = function(x,level_up){
   if(x == (5*level_up)){return(icon("tower",lib="glyphicon"))}
   if(x > (5*level_up)){return(icon("tower",lib="glyphicon"))}
 }
-
-
