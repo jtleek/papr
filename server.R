@@ -8,7 +8,6 @@ library(dplyr)
 dat <- read_csv("./full_biorxiv_data.csv")
 token <- readRDS("./papr-drop.rds")
 session_id <-  as.numeric(Sys.time())
-
 buttons.sum <- 0
 
 shinyServer(function(input, output,session) {
