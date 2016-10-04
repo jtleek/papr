@@ -14,7 +14,7 @@ shinyServer(function(input, output,session) {
   npapers = dim(dat)[1]
   
   file_path <- file.path(tempdir(), paste0(round(session_id),".csv"))
-  values = reactiveValues(count = -1)
+  values = reactiveValues(counter = -1)
   values$user_dat <- data.frame(index   = NA,
                                 title   = NA,
                                 link    = NA,
@@ -23,17 +23,17 @@ shinyServer(function(input, output,session) {
   
   write_csv(isolate(values$user_dat),file_path)
   
-  observeEvent(!any(as.logical(input$list)),{
-    ret = initial_func(file_path,values)
-    values = ret$values
-    output$title = renderText(dat$titles[ret$ind])
-    output$abstract = renderText(dat$abstracts[ret$ind])
-    output$authors = renderText(dat$authors[ret$ind])
-    output$link = renderUI({
-      a(href=dat$links[ret$ind],dat$links[ret$ind])
-    })
-  })
-  
+  # observeEvent(!any(as.logical(input$list)),{
+  #   ret = initial_func(file_path,values)
+  #   values = ret$values
+  #   output$title = renderText(dat$titles[ret$ind])
+  #   output$abstract = renderText(dat$abstracts[ret$ind])
+  #   output$authors = renderText(dat$authors[ret$ind])
+  #   output$link = renderUI({
+  #     a(href=dat$links[ret$ind],dat$links[ret$ind])
+  #   })
+  # })
+  # 
   
   observeEvent(input$myswiper,{
     choice = gsub("The last preprint was: ", "", input$myswiper)
@@ -44,11 +44,14 @@ shinyServer(function(input, output,session) {
       ind = button_func(button=2,file_path,values)
     } else if(choice == "boring and correct"){
       ind = button_func(button=3,file_path,values)
-    } else{
+    } else if(choice == "boring and questionable"){
       ind = button_func(button=4,file_path,values)
+    } else {
+      ret = initial_func(file_path,values)
+      ind = ret$ind
     }
     
-    values$count = values$count + 1
+    values$counter = values$counter + 1
     output$title = renderText(dat$titles[ind])
     output$abstract = renderText(dat$abstracts[ind])
     output$authors = renderText(dat$authors[ind])
@@ -70,7 +73,7 @@ shinyServer(function(input, output,session) {
   })
   
   react2 <- reactive({
-     buttons = c(values$count,
+     buttons = c(values$counter,
                  input$skip)
      return(sum(buttons))
   })
