@@ -1,12 +1,12 @@
 // Shorthand for $( document ).ready()
 $(function() {
-    //in our ui.R file we made the paper info get contained in a div with the id of paper_info.
-    //Here we listen for swipe events on only that div. This allows us to still use the nav bars. 
-    $("#paper_info").swipe( {
+    // console.log( "ready!" );
+    $(document).swipe( {
         //Generic swipe handler for all directions
         swipe: function(event, direction, distance, duration, fingerCount, fingerData) {
           //change value.
           var el =  $(".swiper");
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 
           var decision;
@@ -38,10 +38,30 @@ $(function() {
               el.trigger("change");
            alert("You last swiped " + direction );
 >>>>>>> Stashed changes
+=======
+          el.text("You swiped " + direction );
+
+              // Raise an event to signal that the value changed
+              el.trigger("change");
+          alert("You swiped " + direction );
+>>>>>>> parent of d0a2bea... Merge pull request #1 from nstrayer/master
           // Raise an event to signal that the value changed
-          el.trigger("change");
+        //   $(this).trigger("change");
         }
       });
+
+    //   $(".swiper").on("click", function(evt) {
+    //      alert("you clicked me!")
+    //     // evt.target is the button that was clicked
+    //     var el = $(evt.target);
+      //
+    //     // Set the button's text to its current value plus 1
+    //     el.text("hi");
+      //
+    //     // Raise an event to signal that the value changed
+    //     el.trigger("change");
+    //   });
+
 
     var swiperBinding = new Shiny.InputBinding();
 

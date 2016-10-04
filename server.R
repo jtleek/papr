@@ -8,12 +8,12 @@ library(dplyr)
 dat <- read_csv("./full_biorxiv_data.csv")
 token <- readRDS("./papr-drop.rds")
 session_id <-  as.numeric(Sys.time())
-buttons.sum <- 0
+
 
 shinyServer(function(input, output,session) {
   level_up = 2
   npapers = dim(dat)[1]
-
+  
   file_path <- file.path(tempdir(), paste0(round(session_id),".csv"))
   values = reactiveValues()
   values$user_dat <- data.frame(index = NA,
@@ -35,7 +35,7 @@ shinyServer(function(input, output,session) {
     })
   })
   
-  observeEvent(input$myswiper == "You last swiped right",{
+  observeEvent(input$myswiper == "You swiped right",{
     ind = button_func(button=1,file_path,values)
     output$title = renderText(dat$titles[ind])
     output$abstract = renderText(dat$abstracts[ind])
@@ -45,7 +45,7 @@ shinyServer(function(input, output,session) {
     })
   })
   
-  observeEvent(input$myswiper == "You last swiped up",{
+  observeEvent(input$myswiper == "You swiped up",{
     ind = button_func(button=2,file_path,values)
     output$title = renderText(dat$titles[ind])
     output$abstract = renderText(dat$abstracts[ind])
@@ -55,7 +55,7 @@ shinyServer(function(input, output,session) {
     })
   })
   
-  observeEvent(input$myswiper == "You last swiped down",{
+  observeEvent(input$myswiper == "You swiped down",{
     ind = button_func(button=3,file_path,values)
     output$title = renderText(dat$titles[ind])
     output$abstract = renderText(dat$abstracts[ind])
@@ -65,7 +65,7 @@ shinyServer(function(input, output,session) {
     })
   })
   
-  observeEvent(input$myswiper == "You last swiped left",{
+  observeEvent(input$swiper == "You swiped left",{
     ind = button_func(button=4,file_path,values)
     output$title = renderText(dat$titles[ind])
     output$abstract = renderText(dat$abstracts[ind])
@@ -86,34 +86,34 @@ shinyServer(function(input, output,session) {
   })
   
   react2 <- reactive({
-    buttons = c(input$myswiper == "You last swiped right",
-                input$myswiper == "You last swiped up",
-                input$myswiper == "You last swiped down",
-                input$myswiper == "You last swiped left",
+    buttons = c(input$excite_correct,
+                input$excite_question,
+                input$boring_correct,
+                input$boring_question,
                 input$skip)
     return(sum(buttons))
   })
   
-
+  
   output$level = renderText(level_func(react2(),level_up))
   output$icon = renderUI(icon_func(react2(),level_up))
-  output$test = renderText(react2())
-   output$download_data <- downloadHandler(
-     filename = "my_ratings.csv",
-     content = function(file) {
-       udat = values$user_dat %>% 
-         separate(result,into=c("exciting","questionable"),sep="_") %>%
-         transmute(title,link,exciting,questionable,session) %>%
-         mutate(user_id = session) %>% select(-session)
-       write.csv(udat, file)
-     }
-   )
+  
+  output$download_data <- downloadHandler(
+    filename = "my_ratings.csv",
+    content = function(file) {
+      udat = values$user_dat %>% 
+        separate(result,into=c("exciting","questionable"),sep="_") %>%
+        transmute(title,link,exciting,questionable,session) %>%
+        mutate(user_id = session) %>% select(-session)
+      write.csv(udat, file)
+    }
+  )
 })
 
 
 button_func <- function(button_val,file_path,values){
   button_names <- c("excite_correct","excite_question",
-                   "boring_correct","boring_question","skipped_unsure")
+                    "boring_correct","boring_question","skipped_unsure")
   vals = 1:dim(dat)[1]
   new_ind = sample(vals[-isolate(values$user_dat$index)],1)
   click_number = dim(isolate(values$user_dat))[1]
@@ -135,10 +135,10 @@ button_func <- function(button_val,file_path,values){
 initial_func <- function(file_path,values){
   ind = sample(1:dim(dat)[1],size=1)
   values$user_dat <- data.frame(index = ind,
-                          title = dat$titles[ind],
-                          link = dat$links[ind],
-                          session = session_id,
-                          result = NA) 
+                                title = dat$titles[ind],
+                                link = dat$links[ind],
+                                session = session_id,
+                                result = NA) 
   write_csv(values$user_dat,file_path)
   drop_upload(file_path,
               "shiny/2016/papr/",
@@ -175,6 +175,5 @@ icon_func = function(x,level_up){
   if(x == (5*level_up)){return(icon("tower",lib="glyphicon"))}
   if(x > (5*level_up)){return(icon("tower",lib="glyphicon"))}
 }
-
 
 
