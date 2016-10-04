@@ -36,7 +36,6 @@ shinyServer(function(input, output,session) {
     })
   })
   
-  observeEvent(input$myswiper == "You swiped right",{
   observeEvent(input$myswiper == "You last swiped right",{
     ind = button_func(button=1,file_path,values)
     output$title = renderText(dat$titles[ind])
@@ -47,7 +46,6 @@ shinyServer(function(input, output,session) {
     })
   })
   
-  observeEvent(input$myswiper == "You swiped up",{
   observeEvent(input$myswiper == "You last swiped up",{
     ind = button_func(button=2,file_path,values)
     output$title = renderText(dat$titles[ind])
@@ -58,7 +56,6 @@ shinyServer(function(input, output,session) {
     })
   })
   
-  observeEvent(input$myswiper == "You swiped down",{
   observeEvent(input$myswiper == "You last swiped down",{
     ind = button_func(button=3,file_path,values)
     output$title = renderText(dat$titles[ind])
