@@ -8,10 +8,9 @@ swiperButton <- function(inputId, value = "") {
       tags$script(src="touchSwipe.js"),
       tags$script(src="shinySwiper.js")
     )),
-    tags$button(id = inputId,
-                class = "swiper btn-default",
-                type = "button",
-                as.character(value))
+    tags$p(id = inputId,
+                class = "swiper",
+                "The last preprint was: ")
   )
 }
 
@@ -36,10 +35,12 @@ navbarPage(title="papr",
                 #              icon=icon("ok",lib="glyphicon"),width='200px'),
                 # actionButton("boring_question", "Boring and Questionable",
                 #              icon=icon("trash",lib="glyphicon"),width='200px'),
+                hr(),
                  actionButton("skip", "Unsure - skip paper",
                               icon=icon("question"),width='200px'),
                 h3(""),
                 swiperButton("myswiper"),
+                hr(),
                 h3("Rate papers & level up:"),
                 uiOutput("icon"),
                 em(textOutput("level")),
@@ -51,14 +52,16 @@ navbarPage(title="papr",
               ),
               mainPanel(
                 fluidPage(
-                  h5("Title:\n"),
-                  p(textOutput("title")),
-                  h5("Authors:\n"),
-                  p(textOutput("authors")),
-                  h5("Abstract:\n"),
-                  em(textOutput("abstract")),
-                  h5("Link:\n"),
-                  uiOutput("link")
+                    div(id = "paper_info", #This id is used by the javascript as the area the swipes are registered. 
+                    h5("Title:\n"),
+                    p(textOutput("title")),
+                    h5("Authors:\n"),
+                    p(textOutput("authors")),
+                    h5("Abstract:\n"),
+                    em(textOutput("abstract")),
+                    h5("Link:\n"),
+                    uiOutput("link")
+                    )
                 )
               )
             )
@@ -71,6 +74,6 @@ navbarPage(title="papr",
            tabPanel("Help",
                     fluidPage(
                       includeMarkdown("./help.md")
-                    ) 
+                    )
           ),collapsible=TRUE, windowTitle = "papr - peer review, but easier"
 )
