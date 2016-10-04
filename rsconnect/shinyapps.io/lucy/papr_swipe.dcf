@@ -3,8 +3,8 @@ title: papr (swipe)
 account: lucy
 server: shinyapps.io
 appId: 129372
-bundleId: 576379
+bundleId: 576578
 url: https://lucy.shinyapps.io/papr_swipe/
-when: 1475596228.12396
+when: 1475607719.27809
 asMultiple: FALSE
 asStatic: FALSE

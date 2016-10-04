@@ -81,8 +81,6 @@ shinyServer(function(input, output,session) {
   
   output$level = renderText(level_func(react2(),level_up))
   output$icon = renderUI(icon_func(react2(),level_up))
-  #####
-  output$test = renderText(react2())
   
   output$download_data <- downloadHandler(
     filename = "my_ratings.csv",
