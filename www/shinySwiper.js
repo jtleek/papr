@@ -7,6 +7,7 @@ $(function() {
         swipe: function(event, direction, distance, duration, fingerCount, fingerData) {
           //change value.
           var el =  $(".swiper");
+<<<<<<< Updated upstream
 
           var decision;
 
@@ -30,6 +31,13 @@ $(function() {
 
           el.text("The last preprint was: " + decision );
 
+=======
+          el.text("You last swiped " + direction );
+
+              // Raise an event to signal that the value changed
+              el.trigger("change");
+           alert("You last swiped " + direction );
+>>>>>>> Stashed changes
           // Raise an event to signal that the value changed
           el.trigger("change");
         }

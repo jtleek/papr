@@ -9,6 +9,7 @@ dat <- read_csv("./full_biorxiv_data.csv")
 token <- readRDS("./papr-drop.rds")
 session_id <-  as.numeric(Sys.time())
 
+buttons.sum <- 0
 
 shinyServer(function(input, output,session) {
   level_up = 2
@@ -36,6 +37,7 @@ shinyServer(function(input, output,session) {
   })
   
   observeEvent(input$myswiper == "You swiped right",{
+  observeEvent(input$myswiper == "You last swiped right",{
     ind = button_func(button=1,file_path,values)
     output$title = renderText(dat$titles[ind])
     output$abstract = renderText(dat$abstracts[ind])
@@ -46,6 +48,7 @@ shinyServer(function(input, output,session) {
   })
   
   observeEvent(input$myswiper == "You swiped up",{
+  observeEvent(input$myswiper == "You last swiped up",{
     ind = button_func(button=2,file_path,values)
     output$title = renderText(dat$titles[ind])
     output$abstract = renderText(dat$abstracts[ind])
@@ -56,6 +59,7 @@ shinyServer(function(input, output,session) {
   })
   
   observeEvent(input$myswiper == "You swiped down",{
+  observeEvent(input$myswiper == "You last swiped down",{
     ind = button_func(button=3,file_path,values)
     output$title = renderText(dat$titles[ind])
     output$abstract = renderText(dat$abstracts[ind])
@@ -65,7 +69,7 @@ shinyServer(function(input, output,session) {
     })
   })
   
-  observeEvent(input$swiper == "You swiped left",{
+  observeEvent(input$myswiper == "You last swiped left",{
     ind = button_func(button=4,file_path,values)
     output$title = renderText(dat$titles[ind])
     output$abstract = renderText(dat$abstracts[ind])
@@ -86,18 +90,18 @@ shinyServer(function(input, output,session) {
   })
   
   react2 <- reactive({
-    buttons = c(input$excite_correct,
-                input$excite_question,
-                input$boring_correct,
-                input$boring_question,
+    buttons = c(input$myswiper == "You last swiped right",
+                input$myswiper == "You last swiped up",
+                input$myswiper == "You last swiped down",
+                input$myswiper == "You last swiped left",
                 input$skip)
     return(sum(buttons))
   })
-
   
+
   output$level = renderText(level_func(react2(),level_up))
   output$icon = renderUI(icon_func(react2(),level_up))
-  
+  output$test = renderText(react2())
    output$download_data <- downloadHandler(
      filename = "my_ratings.csv",
      content = function(file) {

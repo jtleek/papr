@@ -17,6 +17,18 @@ swiperButton <- function(inputId, value = "") {
 navbarPage(title="papr",
            tabPanel("Rate",
             sidebarLayout(
+              mainPanel(
+                fluidPage(
+                  h5("Title:\n"),
+                  p(textOutput("title")),
+                  h5("Authors:\n"),
+                  p(textOutput("authors")),
+                  h5("Abstract:\n"),
+                  em(textOutput("abstract")),
+                  h5("Link:\n"),
+                  uiOutput("link")
+                )
+              ),
               sidebarPanel(
                 h3("Rate the paper"),
                 h4(span(tagList("Swipe Right", icon("arrow-right")))),
@@ -43,12 +55,14 @@ navbarPage(title="papr",
                 hr(),
                 h3("Rate papers & level up:"),
                 uiOutput("icon"),
+                textOutput("test"),
                 em(textOutput("level")),
                 h3("Download your ratings:"),
                 downloadButton("download_data", "Download"),
                 h3("Tell someone about papr:"),
                 a(href="https://twitter.com/intent/tweet?text=Check%20out%20papr%20its%20like%20Tinder%20for%20preprints%20https://jhubiostatistics.shinyapps.io/papr",icon("twitter")),
                 a(href="https://www.facebook.com/sharer/sharer.php?u=https%3A//jhubiostatistics.shinyapps.io/papr",icon("facebook"))
+<<<<<<< Updated upstream
               ),
               mainPanel(
                 fluidPage(
@@ -63,6 +77,8 @@ navbarPage(title="papr",
                     uiOutput("link")
                     )
                 )
+=======
+>>>>>>> Stashed changes
               )
             )
            ),
