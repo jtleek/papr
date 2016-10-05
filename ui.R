@@ -24,20 +24,24 @@ navbarPage(title="papr",
                         HTML(
 "<table style='line-height:1.5em;'>
   <tr>
-    <th style='font-weight:normal;'><i class = 'fa fa-arrow-right fa-2x' aria-hidden='true'></th>
-    <th style='font-weight:normal;'>Exciting and Correct</th>
+    <td style='font-weight:normal;'><i class = 'fa fa-arrow-right fa-2x' aria-hidden='true'></td>
+    <td style='font-weight:normal;'>Exciting and Correct
+    <i class = 'fa fa-star' aria-hidden='true'></i></td>
   </tr>
   <tr>
     <td><i class = 'fa fa-arrow-up fa-2x' aria-hidden='true'></i></td>
-    <td>Exciting and Questionable</td>
+    <td>Exciting and Questionable
+    <i class = 'fa fa-volume-up' aria-hidden='true'></i></td>
   </tr>
   <tr>
     <td><i class = 'fa fa-arrow-down fa-2x' aria-hidden='true'></td>
-    <td>Boring and Correct</td>
+    <td>Boring and Correct
+    <i class = 'fa fa-check' aria-hidden='true'></i></td>
   </tr>
   <tr>
     <td><i class = 'fa fa-arrow-left fa-2x' aria-hidden='true'></i></td>
-    <td>Boring and Questionable</td>
+    <td>Boring and Questionable
+    <i class = 'fa fa-trash' aria-hidden='true'></i></td>
   </tr>
 </table>"
 ),

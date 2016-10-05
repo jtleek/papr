@@ -3,7 +3,7 @@
 $(function() {
     //in our ui.R file we made the paper info get contained in a div with the id of paper_info.
     //Here we listen for swipe events on only that div. This allows us to still use the nav bars.
-    $(".swiper").css("display", "none") //we dont need to see this.
+    // $(".swiper").css("opacity", "0") //we dont need to see this.
 
     $("#paper_info").swipe( {
         //Generic swipe handler for all directions
@@ -45,8 +45,7 @@ $(function() {
 
             //put new icon!
             $("#paper_info")
-              .append("<div id='actionImage' style='position: absolute; width: 100%;height: 100%;  margin-top: 50%;'>" + decision_icon + "</div>")
-              .css("text-align", "center")
+              .append("<div id='actionImage' style='position: absolute; width: 100%;height: 100%; margin-top: 50%; text-align: center;'>" + decision_icon + "</div>")
 
             //make the icon go away after 1 second.
             window.setTimeout( function() {
