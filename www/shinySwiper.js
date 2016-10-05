@@ -32,7 +32,7 @@ $(function() {
                  $("#paper_text").css("display", "none") //Hide the abstract text
                   //put new icon!
                   $("#paper_info")
-                  .append("<div id='actionImage' style='position: absolute; width: 100%;height: 100%;  margin-top: 50%;'><i class = 'fa fa-ok fa-5x' aria-hidden='true'></i> </div>")
+                  .append("<div id='actionImage' style='position: absolute; width: 100%;height: 100%;  margin-top: 50%;'><i class = 'fa fa-check fa-5x' aria-hidden='true'></i> </div>")
                   .css("text-align", "center")
 
                 //make the icon go away after 1 second.
