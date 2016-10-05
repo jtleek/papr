@@ -10,6 +10,8 @@ The ratings you submit through this app are not associated in any way with any i
 
 It was built by [Jeff Leek](http://jtleek.com/) as an example of the sort of thing we hope to build with the Johns Hopkins Data Science Lab. If you want a web or mobile app prototyped, consider submitting an app idea for free prototyping at our [Prototyping Shop](http://jhudatascience.org/prototyping/).
 
+[Lucy D'Agostino McGowan](http://lucymcgowan.com) and [Nick Strayer](http://nickstrayer.me), [Vanderbilt Biostatistics](http://www.vanderbilt.edu/biostatistics/graduate/) PhD students, added swipe functionality.
+
 # Terms
 
 This app is provided solely for entertainment of the scientific community and may be taken down at any time with no notice because Jeff gets tired of it. It is provided "as is" and is not guaranteed to do anything really. Use at your own risk and hopefully enjoy :). 

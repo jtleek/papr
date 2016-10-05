@@ -53,6 +53,8 @@ navbarPage(title="papr",
                       mainPanel(
                         fluidPage(
                           div(id = "paper_info", #This id is used by the javascript as the area the swipes are registered. 
+                              h5(em("click and swipe abstract to rate"), align = "center"),
+                              hr(),
                               h5("Title:\n"),
                               p(textOutput("title")),
                               h5("Authors:\n"),

@@ -1,6 +1,6 @@
 # How do I use papr? 
 
-Look at the paper on the right hand side. Rate it with the buttons on the left hand side. If you want, download your ratings. 
+Look at the paper on the right hand side. Rate it by swiping in the direction indicated on the left hand side. If you want, download your ratings. 
 
 # What are my rating choices?
 
