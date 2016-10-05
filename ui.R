@@ -19,17 +19,28 @@ navbarPage(title="papr",
            tabPanel("Rate",
                     sidebarLayout(
                       sidebarPanel(
-                        h3("Swipe to rate the paper"),
+                        h3("Rate the paper"),
                         hr(),
-                        p(span(tagList(icon("arrow-right", "fa-2x"), " Exciting and Correct", icon("star")))),
-
-                       # em(span(tagList(icon("star"),"Exciting and Correct"))),
-                       p(span(tagList(icon("arrow-up", "fa-2x"), " Exciting and Questionable", icon("volume-up")))),
-                       # em(span(tagList(icon("volume-up"),"Exciting and Questionable"))),
-                       p(span(tagList(icon("arrow-down", "fa-2x"), " Boring and Correct", icon("check")))),
-
-                      #  em(span(tagList(icon("ok",lib="glyphicon"),"Boring and Correct"))),
-                      p(span(tagList(icon("arrow-left", "fa-2x"), " Boring and Questionable", icon("trash")))),
+                        HTML(
+"<table style='line-height:1.5em;'>
+  <tr>
+    <th style='font-weight:normal;'><i class = 'fa fa-arrow-right fa-2x' aria-hidden='true'></th>
+    <th style='font-weight:normal;'>Exciting and Correct</th>
+  </tr>
+  <tr>
+    <td><i class = 'fa fa-arrow-up fa-2x' aria-hidden='true'></i></td>
+    <td>Exciting and Questionable</td>
+  </tr>
+  <tr>
+    <td><i class = 'fa fa-arrow-down fa-2x' aria-hidden='true'></td>
+    <td>Boring and Correct</td>
+  </tr>
+  <tr>
+    <td><i class = 'fa fa-arrow-left fa-2x' aria-hidden='true'></i></td>
+    <td>Boring and Questionable</td>
+  </tr>
+</table>"
+),
                         hr(),
                         actionButton("skip", "Unsure - skip paper",
                                      icon=icon("question"),width='200px'),
