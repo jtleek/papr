@@ -3,7 +3,10 @@
 $(function() {
     //in our ui.R file we made the paper info get contained in a div with the id of paper_info.
     //Here we listen for swipe events on only that div. This allows us to still use the nav bars.
-    // $(".swiper").css("opacity", "0") //we dont need to see this.
+
+    $(".swiper")//we dont need to see this.
+        .css("position", "absolute") //so send it way to the side. 
+        .css("left", "-999em")
 
     $("#paper_info").swipe( {
         //Generic swipe handler for all directions
