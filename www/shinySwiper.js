@@ -15,17 +15,59 @@ $(function() {
           switch (direction) {
               case "up":
                 decision = "exciting and questionable";
-                 $("#abstract")
-    .append("<div style='width:100%;height:100%'> <img src = 'https://raw.githubusercontent.com/LucyMcGowan/GSC/gh-pages/logos/twitter_icon.png'> </div>");
+                 $("#paper_text").css("display", "none") //Hide the abstract text
+                  //put new icon!
+                  $("#paper_info")
+                  .append("<div id='actionImage' style='position: absolute; width: 100%;height: 100%;  margin-top: 50%;'><i class = 'fa fa-volume-up fa-5x' aria-hidden='true'></i> </div>")
+                  .css("text-align", "center")
+
+                //make the icon go away after 1 second.
+                window.setTimeout( function() {
+                  $("#actionImage").remove()                //remove our icon.
+                  $("#paper_text").css("display", "inline") //make paper text show back up again.
+                 }, 1000);                 
                 break;
               case "down":
                 decision = "boring and correct";
+                 $("#paper_text").css("display", "none") //Hide the abstract text
+                  //put new icon!
+                  $("#paper_info")
+                  .append("<div id='actionImage' style='position: absolute; width: 100%;height: 100%;  margin-top: 50%;'><i class = 'fa fa-ok fa-5x' aria-hidden='true'></i> </div>")
+                  .css("text-align", "center")
+
+                //make the icon go away after 1 second.
+                window.setTimeout( function() {
+                  $("#actionImage").remove()                //remove our icon.
+                  $("#paper_text").css("display", "inline") //make paper text show back up again.
+                 }, 1000);                 
                 break;
               case "right":
                 decision = "exciting and correct";
+                 $("#paper_text").css("display", "none") //Hide the abstract text
+                  //put new icon!
+                  $("#paper_info")
+                  .append("<div id='actionImage' style='position: absolute; width: 100%;height: 100%;  margin-top: 50%;'><i class = 'fa fa-star fa-5x' aria-hidden='true'></i> </div>")
+                  .css("text-align", "center")
+
+                //make the icon go away after 1 second.
+                window.setTimeout( function() {
+                  $("#actionImage").remove()                //remove our icon.
+                  $("#paper_text").css("display", "inline") //make paper text show back up again.
+                 }, 1000);                
                 break;
               case "left":
                 decision = "boring and questionable";
+                 $("#paper_text").css("display", "none") //Hide the abstract text
+                  //put new icon!
+                  $("#paper_info")
+                  .append("<div id='actionImage' style='position: absolute; width: 100%;height: 100%;  margin-top: 50%;'><i class = 'fa fa-trash fa-5x' aria-hidden='true'></i> </div>")
+                  .css("text-align", "center")
+
+                //make the icon go away after 1 second.
+                window.setTimeout( function() {
+                  $("#actionImage").remove()                //remove our icon.
+                  $("#paper_text").css("display", "inline") //make paper text show back up again.
+                 }, 1000);
                 break;
               default:
                 alert("Not a recognized swipe, sorry!\nTry again! We'll do better this time.");
