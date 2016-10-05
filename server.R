@@ -5,75 +5,62 @@ library(rdrop2)
 library(tidyr)
 library(dplyr)
 
-dat <- read_csv("./full_biorxiv_data.csv")
+dat   <- read_csv("./full_biorxiv_data.csv")
 token <- readRDS("./papr-drop.rds")
 session_id <-  as.numeric(Sys.time())
-
 
 shinyServer(function(input, output,session) {
   level_up = 2
   npapers = dim(dat)[1]
-
+  
   file_path <- file.path(tempdir(), paste0(round(session_id),".csv"))
-  values = reactiveValues()
-  values$user_dat <- data.frame(index = NA,
-                                title = NA,
-                                link = NA,
+  values = reactiveValues(counter = -1)
+  values$user_dat <- data.frame(index   = NA,
+                                title   = NA,
+                                link    = NA,
                                 session = NA,
-                                result = NA) 
+                                result  = NA)
   
   write_csv(isolate(values$user_dat),file_path)
   
-  observeEvent(!any(as.logical(input$list)),{
-    ret = initial_func(file_path,values)
-    values = ret$values
-    output$title = renderText(dat$titles[ret$ind])
-    output$abstract = renderText(dat$abstracts[ret$ind])
-    output$authors = renderText(dat$authors[ret$ind])
-    output$link = renderUI({
-      a(href=dat$links[ret$ind],dat$links[ret$ind])
-    })
-  })
+  # observeEvent(!any(as.logical(input$list)),{
+  #   ret = initial_func(file_path,values)
+  #   values = ret$values
+  #   output$title = renderText(dat$titles[ret$ind])
+  #   output$abstract = renderText(dat$abstracts[ret$ind])
+  #   output$authors = renderText(dat$authors[ret$ind])
+  #   output$link = renderUI({
+  #     a(href=dat$links[ret$ind],dat$links[ret$ind])
+  #   })
+  # })
+  # 
   
-  observeEvent(input$excite_correct,{
-    ind = button_func(button=1,file_path,values)
+  observeEvent(input$myswiper,{
+    choice = gsub("The last preprint was: ", "", input$myswiper)
+    
+    if(choice == "exciting and correct"){
+      ind = button_func(button=1,file_path,values)
+    } else if(choice == "exciting and questionable"){
+      ind = button_func(button=2,file_path,values)
+    } else if(choice == "boring and correct"){
+      ind = button_func(button=3,file_path,values)
+    } else if(choice == "boring and questionable"){
+      ind = button_func(button=4,file_path,values)
+    } else {
+      ret = initial_func(file_path,values)
+      ind = ret$ind
+    }
+    
+    values$counter = values$counter + 1
     output$title = renderText(dat$titles[ind])
     output$abstract = renderText(dat$abstracts[ind])
     output$authors = renderText(dat$authors[ind])
     output$link = renderUI({
       a(href=dat$links[ind],dat$links[ind])
+    
     })
   })
   
-  observeEvent(input$excite_question,{
-    ind = button_func(button=2,file_path,values)
-    output$title = renderText(dat$titles[ind])
-    output$abstract = renderText(dat$abstracts[ind])
-    output$authors = renderText(dat$authors[ind])
-    output$link = renderUI({
-      a(href=dat$links[ind],dat$links[ind])
-    })
-  })
-  
-  observeEvent(input$boring_correct,{
-    ind = button_func(button=3,file_path,values)
-    output$title = renderText(dat$titles[ind])
-    output$abstract = renderText(dat$abstracts[ind])
-    output$authors = renderText(dat$authors[ind])
-    output$link = renderUI({
-      a(href=dat$links[ind],dat$links[ind])
-    })
-  })
-  
-  observeEvent(input$boring_question,{
-    ind = button_func(button=4,file_path,values)
-    output$title = renderText(dat$titles[ind])
-    output$abstract = renderText(dat$abstracts[ind])
-    output$authors = renderText(dat$authors[ind])
-    output$link = renderUI({
-      a(href=dat$links[ind],dat$links[ind])
-    })
-  })
   
   observeEvent(input$skip,{
     ind = button_func(button=5,file_path,values)
@@ -86,34 +73,34 @@ shinyServer(function(input, output,session) {
   })
   
   react2 <- reactive({
-    buttons = c(input$excite_correct,
-                input$excite_question,
-                input$boring_correct,
-                input$boring_question,
-                input$skip)
-    return(sum(buttons))
+     buttons = c(values$counter,
+                 input$skip)
+     return(sum(buttons))
   })
-
+  
   
   output$level = renderText(level_func(react2(),level_up))
   output$icon = renderUI(icon_func(react2(),level_up))
   
-   output$download_data <- downloadHandler(
-     filename = "my_ratings.csv",
-     content = function(file) {
-       udat = values$user_dat %>% 
-         separate(result,into=c("exciting","questionable"),sep="_") %>%
-         transmute(title,link,exciting,questionable,session) %>%
-         mutate(user_id = session) %>% select(-session)
-       write.csv(udat, file)
-     }
-   )
+  output$download_data <- downloadHandler(
+    filename = "my_ratings.csv",
+    content = function(file) {
+      udat = values$user_dat %>%
+        separate(result,into=c("exciting","questionable"),sep="_") %>%
+        transmute(title,link,exciting,questionable,session) %>%
+        mutate(user_id = session) %>% select(-session)
+      write.csv(udat, file)
+    }
+  )
 })
 
 
 button_func <- function(button_val,file_path,values){
-  button_names <- c("excite_correct","excite_question",
-                   "boring_correct","boring_question","skipped_unsure")
+  button_names <- c("excite_correct",
+                    "excite_question",
+                    "boring_correct",
+                    "boring_question",
+                    "skipped_unsure")
   vals = 1:dim(dat)[1]
   new_ind = sample(vals[-isolate(values$user_dat$index)],1)
   click_number = dim(isolate(values$user_dat))[1]
@@ -122,7 +109,7 @@ button_func <- function(button_val,file_path,values){
                        title = dat$titles[new_ind],
                        link = dat$links[new_ind],
                        session = session_id,
-                       result = NA) 
+                       result = NA)
   values$user_dat <- rbind(values$user_dat,new_row)
   write_csv(isolate(values$user_dat),file_path)
   drop_upload(file_path,
@@ -135,17 +122,16 @@ button_func <- function(button_val,file_path,values){
 initial_func <- function(file_path,values){
   ind = sample(1:dim(dat)[1],size=1)
   values$user_dat <- data.frame(index = ind,
-                          title = dat$titles[ind],
-                          link = dat$links[ind],
-                          session = session_id,
-                          result = NA) 
+                                title = dat$titles[ind],
+                                link = dat$links[ind],
+                                session = session_id,
+                                result = NA)
   write_csv(values$user_dat,file_path)
   drop_upload(file_path,
               "shiny/2016/papr/",
               dtoken = token)
   return(list(ind=ind,values=values))
 }
-
 
 
 level_func = function(x,level_up){
@@ -175,6 +161,3 @@ icon_func = function(x,level_up){
   if(x == (5*level_up)){return(icon("tower",lib="glyphicon"))}
   if(x > (5*level_up)){return(icon("tower",lib="glyphicon"))}
 }
-
-
-
