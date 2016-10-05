@@ -8,12 +8,10 @@ $(function() {
     $("#paper_info").swipe( {
         //Generic swipe handler for all directions
         swipe: function(event, direction, distance, duration, fingerCount, fingerData) {
-          //change value.
-          var el =  $(".swiper");
-
           //initiate some variables.
-          var decision,
-              decision_icon;
+          var el =  $(".swiper"),
+            decision,
+            decision_icon;
 
           switch (direction) {
               case "up":
@@ -45,7 +43,7 @@ $(function() {
             //Hide the abstract text
             $("#paper_text").css("display", "none");
 
-              //put new icon!
+            //put new icon!
             $("#paper_info")
               .append("<div id='actionImage' style='position: absolute; width: 100%;height: 100%;  margin-top: 50%;'>" + decision_icon + "</div>")
               .css("text-align", "center")
