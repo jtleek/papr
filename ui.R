@@ -14,6 +14,7 @@ swiperButton <- function(inputId, value = "") {
   )
 }
 
+
 navbarPage(title="papr",
            tabPanel("Rate",
                     sidebarLayout(
