@@ -10,10 +10,9 @@ swiperButton <- function(inputId, value = "") {
     )),
     tags$p(id = inputId,
            class = "swiper",
-           "The last preprint was: ")
+           "Let's start rating! ")
   )
 }
-
 
 navbarPage(title="papr",
            tabPanel("Rate",
@@ -22,29 +21,29 @@ navbarPage(title="papr",
                         h3("Rate the paper"),
                         hr(),
                         HTML(
-"<table style='line-height:1.5em;'>
-  <tr>
-    <td style='font-weight:normal;'><i class = 'fa fa-arrow-right fa-2x' aria-hidden='true'></td>
-    <td style='font-weight:normal;'>Exciting and Correct
-    <i class = 'fa fa-star' aria-hidden='true'></i></td>
-  </tr>
-  <tr>
-    <td><i class = 'fa fa-arrow-up fa-2x' aria-hidden='true'></i></td>
-    <td>Exciting and Questionable
-    <i class = 'fa fa-volume-up' aria-hidden='true'></i></td>
-  </tr>
-  <tr>
-    <td><i class = 'fa fa-arrow-down fa-2x' aria-hidden='true'></td>
-    <td>Boring and Correct
-    <i class = 'fa fa-check' aria-hidden='true'></i></td>
-  </tr>
-  <tr>
-    <td><i class = 'fa fa-arrow-left fa-2x' aria-hidden='true'></i></td>
-    <td>Boring and Questionable
-    <i class = 'fa fa-trash' aria-hidden='true'></i></td>
-  </tr>
-</table>"
-),
+                            "<table style='line-height:1.5em;'>
+                              <tr>
+                                <td style='font-weight:normal;'><i class = 'fa fa-arrow-right fa-2x' aria-hidden='true'></td>
+                                <td style='font-weight:normal;'>Exciting and Correct
+                                <i class = 'fa fa-star' aria-hidden='true'></i></td>
+                              </tr>
+                              <tr>
+                                <td><i class = 'fa fa-arrow-up fa-2x' aria-hidden='true'></i></td>
+                                <td>Exciting and Questionable
+                                <i class = 'fa fa-volume-up' aria-hidden='true'></i></td>
+                              </tr>
+                              <tr>
+                                <td><i class = 'fa fa-arrow-down fa-2x' aria-hidden='true'></td>
+                                <td>Boring and Correct
+                                <i class = 'fa fa-check' aria-hidden='true'></i></td>
+                              </tr>
+                              <tr>
+                                <td><i class = 'fa fa-arrow-left fa-2x' aria-hidden='true'></i></td>
+                                <td>Boring and Questionable
+                                <i class = 'fa fa-trash' aria-hidden='true'></i></td>
+                              </tr>
+                            </table>"
+                        ),
                         hr(),
                         actionButton("skip", "Unsure - skip paper",
                                      icon=icon("question"),width='200px'),

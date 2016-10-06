@@ -23,23 +23,14 @@ shinyServer(function(input, output,session) {
 
   write_csv(isolate(values$user_dat),file_path)
 
-  # observeEvent(!any(as.logical(input$list)),{
-  #   ret = initial_func(file_path,values)
-  #   values = ret$values
-  #   output$title = renderText(dat$titles[ret$ind])
-  #   output$abstract = renderText(dat$abstracts[ret$ind])
-  #   output$authors = renderText(dat$authors[ret$ind])
-  #   output$link = renderUI({
-  #     a(href=dat$links[ret$ind],dat$links[ret$ind])
-  #   })
-  # })
-  #
-
+  #Function to sit and watch out swipeinput for decisions on papers.
   observeEvent(input$myswiper,{
 
+    #we need to extract the event we saw from the input passed to shiny from javascript
+    #This comes in the form "<choice>,<event number>"
     choice = strsplit(input$myswiper, split = ",")[[1]][1]
 
-    print(choice)
+    print(choice) #for debugging purposes.
 
     if(choice == "exciting and correct"){
       ind = button_func(button=1,file_path,values)
@@ -54,22 +45,24 @@ shinyServer(function(input, output,session) {
       ind = ret$ind
     }
 
-    values$counter = values$counter + 1
-    output$title = renderText(dat$titles[ind])
-    output$abstract = renderText(dat$abstracts[ind])
-    output$authors = renderText(dat$authors[ind])
-    output$link = renderUI({
-      a(href=dat$links[ind],dat$links[ind])
+    print(dat$abstracts[ind])
 
+    values$counter  = values$counter + 1
+    output$title    = renderText(dat$titles[ind])
+    output$abstract = renderText(dat$abstracts[ind])
+    output$authors  = renderText(dat$authors[ind])
+    output$link     = renderUI({
+      a(href=dat$links[ind],dat$links[ind])
     })
+    print(values$counter)
   })
 
 
   observeEvent(input$skip,{
     ind = button_func(button=5,file_path,values)
-    output$title = renderText(dat$titles[ind])
+    output$title =    renderText(dat$titles[ind])
     output$abstract = renderText(dat$abstracts[ind])
-    output$authors = renderText(dat$authors[ind])
+    output$authors =  renderText(dat$authors[ind])
     output$link = renderUI({
       a(href=dat$links[ind],dat$links[ind])
     })
@@ -104,6 +97,7 @@ button_func <- function(button_val,file_path,values){
                     "boring_correct",
                     "boring_question",
                     "skipped_unsure")
+
   vals = 1:dim(dat)[1]
   new_ind = sample(vals[-isolate(values$user_dat$index)],1)
   click_number = dim(isolate(values$user_dat))[1]
