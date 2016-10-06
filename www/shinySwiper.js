@@ -4,9 +4,11 @@ $(function() {
     //in our ui.R file we made the paper info get contained in a div with the id of paper_info.
     //Here we listen for swipe events on only that div. This allows us to still use the nav bars.
 
-    $(".swiper")//we dont need to see this.
-        .css("position", "absolute") //so send it way to the side. 
-        .css("left", "-999em")
+    // $(".swiper")//we dont need to see this.
+    //     .css("position", "absolute") //so send it way to the side.
+    //     .css("left", "-999em")
+
+    var event_counter = 0;
 
     $("#paper_info").swipe( {
         //Generic swipe handler for all directions
@@ -38,7 +40,8 @@ $(function() {
                 return; //kill the process so we dont go anywhere.
             }
 
-            el.text("The last preprint was: " + decision ); //we need to change this because this is what shiny watches for.
+            event_counter += 1;
+            el.text(decision + ",event_num:"  + event_counter ); //we need to change this because this is what shiny watches for.
 
             // Raise an event to signal that the value changed
             el.trigger("change");
@@ -65,7 +68,8 @@ $(function() {
         return $(scope).find(".swiper");
       },
       getValue: function(el) {
-        return $(el).text();
+          console.log("triggered get value.")
+        return $(el).text();;
       },
       setValue: function(el, value) {
         $(el).text(value);

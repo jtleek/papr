@@ -12,7 +12,7 @@ session_id <-  as.numeric(Sys.time())
 shinyServer(function(input, output,session) {
   level_up = 2
   npapers = dim(dat)[1]
-  
+
   file_path <- file.path(tempdir(), paste0(round(session_id),".csv"))
   values = reactiveValues(counter = -1)
   values$user_dat <- data.frame(index   = NA,
@@ -20,9 +20,9 @@ shinyServer(function(input, output,session) {
                                 link    = NA,
                                 session = NA,
                                 result  = NA)
-  
+
   write_csv(isolate(values$user_dat),file_path)
-  
+
   # observeEvent(!any(as.logical(input$list)),{
   #   ret = initial_func(file_path,values)
   #   values = ret$values
@@ -33,11 +33,14 @@ shinyServer(function(input, output,session) {
   #     a(href=dat$links[ret$ind],dat$links[ret$ind])
   #   })
   # })
-  # 
-  
+  #
+
   observeEvent(input$myswiper,{
-    choice = gsub("The last preprint was: ", "", input$myswiper)
-    
+
+    choice = strsplit(input$myswiper, split = ",")[[1]][1]
+
+    print(choice)
+
     if(choice == "exciting and correct"){
       ind = button_func(button=1,file_path,values)
     } else if(choice == "exciting and questionable"){
@@ -50,18 +53,18 @@ shinyServer(function(input, output,session) {
       ret = initial_func(file_path,values)
       ind = ret$ind
     }
-    
+
     values$counter = values$counter + 1
     output$title = renderText(dat$titles[ind])
     output$abstract = renderText(dat$abstracts[ind])
     output$authors = renderText(dat$authors[ind])
     output$link = renderUI({
       a(href=dat$links[ind],dat$links[ind])
-    
+
     })
   })
-  
-  
+
+
   observeEvent(input$skip,{
     ind = button_func(button=5,file_path,values)
     output$title = renderText(dat$titles[ind])
@@ -71,17 +74,17 @@ shinyServer(function(input, output,session) {
       a(href=dat$links[ind],dat$links[ind])
     })
   })
-  
+
   react2 <- reactive({
      buttons = c(values$counter,
                  input$skip)
      return(sum(buttons))
   })
-  
-  
+
+
   output$level = renderText(level_func(react2(),level_up))
   output$icon = renderUI(icon_func(react2(),level_up))
-  
+
   output$download_data <- downloadHandler(
     filename = "my_ratings.csv",
     content = function(file) {
