@@ -10,7 +10,7 @@ swiperButton <- function(inputId, value = "") {
     )),
     tags$p(id = inputId,
            class = "swiper",
-           "The last preprint was: ")
+           "Let's start rating! ")
   )
 }
 
@@ -19,22 +19,31 @@ navbarPage(title="papr",
                     sidebarLayout(
                       sidebarPanel(
                         h3("Rate the paper"),
-                        h4(span(tagList("Swipe Right", icon("arrow-right")))),
-                        em(span(tagList(icon("star"),"Exciting and Correct"))),
-                        h4(span(tagList("Swipe Up", icon("arrow-up")))),
-                        em(span(tagList(icon("volume-up"),"Exciting and Questionable"))),
-                        h4(span(tagList("Swipe Down", icon("arrow-down")))),
-                        em(span(tagList(icon("ok",lib="glyphicon"),"Boring and Correct"))),
-                        h4(span(tagList("Swipe Left", icon("arrow-left")))),
-                        em(span(tagList(icon("trash"),"Boring and Questionable"))),
-                        # actionButton("excite_correct", "Exciting and Correct",
-                        #              icon=icon("star",lib="glyphicon"),width='200px'),
-                        # actionButton("excite_question", "Exciting and Questionable",
-                        #              icon=icon("volume-up",lib="glyphicon"),width='200px'),
-                        # actionButton("boring_correct", "Boring and Correct",
-                        #              icon=icon("ok",lib="glyphicon"),width='200px'),
-                        # actionButton("boring_question", "Boring and Questionable",
-                        #              icon=icon("trash",lib="glyphicon"),width='200px'),
+                        hr(),
+                        HTML(
+                            "<table style='line-height:1.5em;'>
+                              <tr>
+                                <td style='font-weight:normal;'><i class = 'fa fa-arrow-right fa-2x' aria-hidden='true'></td>
+                                <td style='font-weight:normal;'>Exciting and Correct
+                                <i class = 'fa fa-star' aria-hidden='true'></i></td>
+                              </tr>
+                              <tr>
+                                <td><i class = 'fa fa-arrow-up fa-2x' aria-hidden='true'></i></td>
+                                <td>Exciting and Questionable
+                                <i class = 'fa fa-volume-up' aria-hidden='true'></i></td>
+                              </tr>
+                              <tr>
+                                <td><i class = 'fa fa-arrow-down fa-2x' aria-hidden='true'></td>
+                                <td>Boring and Correct
+                                <i class = 'fa fa-check' aria-hidden='true'></i></td>
+                              </tr>
+                              <tr>
+                                <td><i class = 'fa fa-arrow-left fa-2x' aria-hidden='true'></i></td>
+                                <td>Boring and Questionable
+                                <i class = 'fa fa-trash' aria-hidden='true'></i></td>
+                              </tr>
+                            </table>"
+                        ),
                         hr(),
                         actionButton("skip", "Unsure - skip paper",
                                      icon=icon("question"),width='200px'),
@@ -52,17 +61,19 @@ navbarPage(title="papr",
                       ),
                       mainPanel(
                         fluidPage(
-                          div(id = "paper_info", #This id is used by the javascript as the area the swipes are registered. 
-                              h5(em("click and swipe abstract to rate"), align = "center"),
-                              hr(),
-                              h5("Title:\n"),
-                              p(textOutput("title")),
-                              h5("Authors:\n"),
-                              p(textOutput("authors")),
-                              h5("Abstract:\n"),
-                              em(textOutput("abstract")),
-                              h5("Link:\n"),
-                              uiOutput("link")
+                          div(id = "paper_info", #This id is used by the javascript as the area the swipes are registered.
+                              div(id = "paper_text",
+                                  h5(em("click and swipe abstract to rate"), align = "center"),
+                                  hr(),
+                                  h5("Title:\n"),
+                                  p(textOutput("title")),
+                                  h5("Authors:\n"),
+                                  p(textOutput("authors")),
+                                  h5("Abstract:\n"),
+                                  em(textOutput("abstract")),
+                                  h5("Link:\n"),
+                                  uiOutput("link")
+                              )
                           )
                         )
                       )
