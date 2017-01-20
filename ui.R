@@ -6,7 +6,8 @@ swiperButton <- function(inputId, value = "") {
   tagList(
     singleton(tags$head(
       tags$script(src="touchSwipe.js"),
-      tags$script(src="shinySwiper.js")
+      tags$script(src="shinySwiper.js"),
+      tags$link(rel = "stylesheet", type = "text/css", href = "appStyle.css")
     )),
     tags$p(id = inputId,
            class = "swiper",

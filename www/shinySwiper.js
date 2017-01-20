@@ -2,12 +2,33 @@
 
 $(function() {
     //in our ui.R file we made the paper info get contained in a div with the id of paper_info.
-    //Here we listen for swipe events on only that div. This allows us to still use the nav bars.
+    //Here we listen for swipe events on only that div. If we did it for the whole
+    //page then we would not be able to use the nav bars.
 
-    $(".swiper")//we dont need to see this.
+    //When we called this custom component in ui.r using "swiperButton <- function(inputId, value = "") {..."
+    //we made shiny draw a paragraph element to the screen because it needs to draw something
+    //by convention (makes sense in most situations).
+    //we dont need to see it however as we are actually targetting the abstract itself with our event listener...
+    $(".swiper")
         .css("position", "absolute") //so send it way to the side.
         .css("left", "-999em")
 
+    //put new icon!
+    $("#paper_info")
+      .append("<div id='actionImage' style='text-align: center;'>" + " " + "</div>");
+
+      //put new icon!
+      $("#paper_info")
+        .append("<div id='actionImage' style='text-align: center;'>" + " " + "</div>");
+    $("#actionImage")
+      .css({
+        position:'absolute',
+        opacity: 0,
+        left:  '50%',
+        top:  ($(window).height() - $("#paper_info").outerHeight())/4
+    });
+
+    //  style='position: absolute; width: 100%; margin-top: -20px; text-align: center; opacity:0;'
     var event_counter = 0;
 
     $("#paper_info").swipe( {
@@ -41,25 +62,28 @@ $(function() {
             }
 
             //we need to add an event counter to the text because shiny watches for this object changing.
-            //if we did say right swipe then another right swipe it would not see a difference and thus
-            //not update. Obviously not good.
+            //This means if the user right swipes on a paper, then right swipes again on the next paper
+            //the function would would not see a difference and thus not update. Obviously not good.
+            //we fix this by not only righting the decision, but also which decision number it was.
             event_counter += 1;
             el.text(decision + ",event_num:"  + event_counter );
 
             // Raise an event to signal that the value changed
             el.trigger("change");
 
-            //Hide the abstract text
-            $("#paper_text").css("opacity", "0");
+            //let's animate the text going away
+            $("#paper_text")
+                .fadeTo( "slow", 0);
 
             //put new icon!
-            $("#paper_info")
-              .append("<div id='actionImage' style='fixed: absolute; width: 100%; margin-top: -25%;; text-align: center;'>" + decision_icon + "</div>")
+            $("#actionImage")
+                .html(decision_icon)
+                .fadeTo( "slow", 1);
 
             //make the icon go away after 1 second.
             window.setTimeout( function() {
-              $("#actionImage").remove()                //remove our icon.
-              $("#paper_text").css("opacity", "1"); //make paper text show back up again.
+              $("#actionImage").fadeTo( "slow", 0);  //fade out icon.
+              $("#paper_text").fadeTo( "slow", 1);   //fade in new paper text.
            }, 1500);
         }
       });

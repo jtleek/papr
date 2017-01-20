@@ -30,7 +30,7 @@ shinyServer(function(input, output,session) {
     #This comes in the form "<choice>,<event number>"
     choice = strsplit(input$myswiper, split = ",")[[1]][1]
 
-    print(choice) #for debugging purposes.
+    #print(choice) #for debugging purposes.
 
     if(choice == "exciting and correct"){
       ind = button_func(button=1,file_path,values)
@@ -47,6 +47,7 @@ shinyServer(function(input, output,session) {
 
     print(dat$abstracts[ind])
 
+    #After we've made our choice, render a new paper' info.
     values$counter  = values$counter + 1
     output$title    = renderText(dat$titles[ind])
     output$abstract = renderText(dat$abstracts[ind])
