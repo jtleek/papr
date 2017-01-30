@@ -15,7 +15,21 @@ swiperButton <- function(inputId, value = "") {
   )
 }
 
+
 navbarPage(title="papr",
+           tabPanel("Login",
+                    shinyjs::useShinyjs(),
+                    sidebarLayout(
+                      sidebarPanel(
+                        p("Welcome!"),
+                        
+                        googleAuthR::googleAuthUI("gauth_login")
+                      ),
+                      mainPanel(
+                        textOutput("display_username")
+                      )
+                    )
+           ),
            tabPanel("Rate",
                     sidebarLayout(
                       sidebarPanel(

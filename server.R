@@ -4,12 +4,60 @@ library(googlesheets)
 library(rdrop2)
 library(tidyr)
 library(dplyr)
+library(googleAuthR)
+library(googleID)
+library(shiny)
 
 dat   <- read_csv("./full_biorxiv_data.csv")
 token <- readRDS("./papr-drop.rds")
 session_id <-  as.numeric(Sys.time())
 
+options(googleAuthR.scopes.selected = c("https://www.googleapis.com/auth/userinfo.email",
+                                        "https://www.googleapis.com/auth/userinfo.profile"))
+rv <- reactiveValues(
+  login = FALSE
+)
+rv$person_id <- 12345
+
 shinyServer(function(input, output,session) {
+ 
+  
+  ## Authentication
+  accessToken <- callModule(googleAuth, "gauth_login",
+                            login_class = "btn btn-primary",
+                            logout_class = "btn btn-primary")
+  
+  #Goes into googles oauth and pulls down identity 
+  userDetails <- reactive({
+    validate(
+      need(accessToken(), "not logged in")
+    )
+    rv$login <- TRUE
+    #grab the user information from google
+    details <- with_shiny(get_user_info, shiny_access_token = accessToken())
+    #assign the user id to our reactive variable
+    rv$person_id <- details$id
+    #return user information
+    details
+  })
+  
+  # Display user's Google display name after successful login
+  output$display_username <- renderText({
+    validate(
+      need(userDetails(), "getting user details")
+    )
+    userDetails()$displayName
+  })
+
+  ## Workaround to avoid shinyaps.io URL problems
+  observe({
+    if (rv$login) {
+      shinyjs::onclick("gauth_login-googleAuthUi",
+                       shinyjs::runjs("window.location.href = 'https://lucy.shinyapps.io/papr';"))
+    }
+  })
+
+
   level_up = 2
   npapers = dim(dat)[1]
 
@@ -19,7 +67,8 @@ shinyServer(function(input, output,session) {
                                 title   = NA,
                                 link    = NA,
                                 session = NA,
-                                result  = NA)
+                                result  = NA,
+                                person  = NA)
 
   write_csv(isolate(values$user_dat),file_path)
 
@@ -107,7 +156,9 @@ button_func <- function(button_val,file_path,values){
                        title = dat$titles[new_ind],
                        link = dat$links[new_ind],
                        session = session_id,
-                       result = NA)
+                       result = NA,
+                       person = isolate(rv$person_id))
+  
   values$user_dat <- rbind(values$user_dat,new_row)
   write_csv(isolate(values$user_dat),file_path)
   drop_upload(file_path,
@@ -123,7 +174,8 @@ initial_func <- function(file_path,values){
                                 title = dat$titles[ind],
                                 link = dat$links[ind],
                                 session = session_id,
-                                result = NA)
+                                result = NA,
+                                person = isolate(rv$person_id))
   write_csv(values$user_dat,file_path)
   drop_upload(file_path,
               "shiny/2016/papr/",

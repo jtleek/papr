@@ -13,10 +13,6 @@ $(function() {
         .css("position", "absolute") //so send it way to the side.
         .css("left", "-999em")
 
-    //put new icon!
-    $("#paper_info")
-      .append("<div id='actionImage' style='text-align: center;'>" + " " + "</div>");
-
       //put new icon!
       $("#paper_info")
         .append("<div id='actionImage' style='text-align: center;'>" + " " + "</div>");
