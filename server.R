@@ -51,7 +51,7 @@ shinyServer(function(input, output,session) {
   # Display user's Google display name after successful login
   output$display_username <- renderText({
     validate( need(userDetails(), "getting user details") )
-    userDetails()$displayName #return name after validation
+    paste("Welcome,", userDetails()$displayName) #return name after validation
   })
 
   ## Workaround to avoid shinyaps.io URL problems
@@ -92,7 +92,8 @@ shinyServer(function(input, output,session) {
 
   #If the user clicks skip paper, load some new stuff. 
   observeEvent(input$skip,{
-    ind             = rate_paper(button=5,file_path,rv) #select the skip option
+    choice = "skipped"
+    ind             = rate_paper(choice,file_path,rv) #select the skip option
     output$title    = renderText(dat$titles[ind])
     output$abstract = renderText(dat$abstracts[ind])
     output$authors  = renderText(dat$authors[ind])
@@ -109,7 +110,8 @@ shinyServer(function(input, output,session) {
     filename = "my_ratings.csv",
     content = function(file) {
       udat = rv$user_dat %>%
-        separate(result,into=c("exciting","questionable"),sep="_") %>%
+        mutate(result = replace(result, result == "skipped", NA)) %>%
+        separate(result,into=c("exciting","questionable"),sep=" and ") %>%
         transmute(title,link,exciting,questionable,session) %>%
         mutate(user_id = session) %>% select(-session)
       write.csv(udat, file)
@@ -142,8 +144,8 @@ rate_paper <- function(choice, file_path, rv){
   if(initializing){ #If this is the first time we're running the function create the dataframe for session
     rv$user_dat <- new_row #add new empty row the csv
   } else { #If this is a normal rating after initialization append a new row to our session df
-    rv$user_dat[rv$counter,5] <- choice #Put the last review into the review slot of their data. 
-    rv$user_dat <- rbind(rv$user_dat,new_row) #add a new empty row to dataframe. 
+    rv$user_dat[1,5] <- choice #Put the last review into the review slot of their data. 
+    rv$user_dat <- rbind(new_row, rv$user_dat) #add a new empty row to dataframe. 
   }
   
   write_csv(isolate(rv$user_dat),file_path) #write the csv
