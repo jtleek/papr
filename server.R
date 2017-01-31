@@ -58,7 +58,7 @@ shinyServer(function(input, output,session) {
   observe({
     if (rv$login) {
       shinyjs::onclick("gauth_login-googleAuthUi",
-                       shinyjs::runjs("window.location.href = 'https://lucy.shinyapps.io/papr';"))
+                       shinyjs::runjs(paste0("window.location.href =",site, ";")))
     }
   })
 
