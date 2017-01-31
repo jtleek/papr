@@ -33,7 +33,6 @@ rv <- reactiveValues(
 )
 
 shinyServer(function(input, output,session) {
- 
   
   ## Authentication
   accessToken <- callModule(googleAuth, "gauth_login",
@@ -76,21 +75,11 @@ shinyServer(function(input, output,session) {
     #we need to extract the event we saw from the input passed to shiny from javascript
     #This comes in the form "<choice>,<event number>"
     choice = strsplit(input$myswiper, split = ",")[[1]][1]
-
     #print(choice) #for debugging purposes.
-
-    if(choice == "exciting and correct"){
-      ind = button_func(button=1,file_path,rv)
-    } else if(choice == "exciting and questionable"){
-      ind = button_func(button=2,file_path,rv)
-    } else if(choice == "boring and correct"){
-      ind = button_func(button=3,file_path,rv)
-    } else if(choice == "boring and questionable"){
-      ind = button_func(button=4,file_path,rv)
-    } else {
-      ind = button_func("Starting", file_path, rv, initializing = TRUE)
-    }
-
+    
+    #Send our choice to the rate_paper function which will then send us back a new abstract index to load a new paper with.
+    ind <- rate_paper(choice,file_path,rv)
+  
     # print(dat$abstracts[ind])
 
     #After we've made our choice, render a new paper' info.
@@ -98,15 +87,13 @@ shinyServer(function(input, output,session) {
     output$title    = renderText(dat$titles[ind])
     output$abstract = renderText(dat$abstracts[ind])
     output$authors  = renderText(dat$authors[ind])
-    output$link     = renderUI({
-      a(href=dat$links[ind],dat$links[ind])
-    })
+    output$link     = renderUI({ a(href=dat$links[ind],dat$links[ind]) })
     # print(rv$counter) #for debugging purposes
   })
 
   #If the user clicks skip paper load some new stuff. 
   observeEvent(input$skip,{
-    ind             = button_func(button=5,file_path,rv) #select the skip option
+    ind             = rate_paper(button=5,file_path,rv) #select the skip option
     output$title    = renderText(dat$titles[ind])
     output$abstract = renderText(dat$abstracts[ind])
     output$authors  = renderText(dat$authors[ind])
@@ -134,22 +121,19 @@ shinyServer(function(input, output,session) {
 })
 
 
-button_func <- function(button_val, file_path, rv, initializing = FALSE){
-  button_names <- c("excite_correct",
-                    "excite_question",
-                    "boring_correct",
-                    "boring_question",
-                    "skipped_unsure")
-
+rate_paper <- function(choice, file_path, rv){
+  
+  #is this the first time the paper is being run?
+  initializing <-  choice == "initializing"
+  
   vals <- 1:dim(dat)[1] #index of all papers in data
   
   if(initializing){
     new_ind <- sample(1:dim(dat)[1],size=1) #Grab our first paper!
   } else {
-    new_ind <- sample(vals[-isolate(rv$user_dat$index)],1) #randomly grab a new paper
-    
+    new_ind <- sample(vals[-isolate(rv$user_dat$index)],1) #randomly grab a new paper but ignore the just read one
   }
-  
+  #Make a new row for our session data. 
   new_row <- data.frame(index   = new_ind,
                         title   = dat$titles[new_ind],
                         link    = dat$links[new_ind],
@@ -161,7 +145,7 @@ button_func <- function(button_val, file_path, rv, initializing = FALSE){
   if(initializing){
     rv$user_dat <- new_row #add new empty row the csv
   } else {
-    rv$user_dat[rv$counter,5] <- button_names[button_val] #Put the last review into the review slot of their data. 
+    rv$user_dat[rv$counter,5] <- choice #Put the last review into the review slot of their data. 
     rv$user_dat <- rbind(rv$user_dat,new_row) #add a new empty row to dataframe. 
   }
   
