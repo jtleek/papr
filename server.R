@@ -8,45 +8,50 @@ library(googleAuthR)
 library(googleID)
 library(shiny)
 
-dat   <- read_csv("./full_biorxiv_data.csv")
+#Some constants that can be done outside of the shiny server session. 
+dat <- read_csv("./full_biorxiv_data.csv") #CSV of paper info
 token <- readRDS("./papr-drop.rds")
-session_id <-  as.numeric(Sys.time())
+session_id <- as.numeric(Sys.time())
+level_up <- 3 #Number of papers needed to review to level up. 
 
+#Google authentication details
 options(googleAuthR.scopes.selected = c("https://www.googleapis.com/auth/userinfo.email",
                                         "https://www.googleapis.com/auth/userinfo.profile"))
+
+#Variables that get updated throughout the session. 
+#Need to be wrapped in reactiveValues to make sure their updates propigate
 rv <- reactiveValues(
-  login = FALSE
+  login = FALSE,
+  person_id = 12345,
+  counter = -1,
+  user_dat = data.frame(index   = NA,
+                        title   = NA,
+                        link    = NA,
+                        session = NA,
+                        result  = NA,
+                        person  = NA)
 )
-rv$person_id <- 12345
 
 shinyServer(function(input, output,session) {
- 
   
   ## Authentication
   accessToken <- callModule(googleAuth, "gauth_login",
                             login_class = "btn btn-primary",
                             logout_class = "btn btn-primary")
   
-  #Goes into googles oauth and pulls down identity 
+  #Goes into google's oauth and pulls down identity 
   userDetails <- reactive({
-    validate(
-      need(accessToken(), "not logged in")
-    )
-    rv$login <- TRUE
-    #grab the user information from google
-    details <- with_shiny(get_user_info, shiny_access_token = accessToken())
-    #assign the user id to our reactive variable
-    rv$person_id <- details$id
-    #return user information
-    details
+    validate( need(accessToken(), "not logged in") )
+    rv$login <- TRUE #Record the user as logged in
+    details <- with_shiny(get_user_info, shiny_access_token = accessToken())  #grab the user info
+    rv$person_id <- details$id #assign the user id to our reactive variable
+    details #return user information
   })
   
   # Display user's Google display name after successful login
   output$display_username <- renderText({
-    validate(
-      need(userDetails(), "getting user details")
-    )
-    userDetails()$displayName
+    validate( need(userDetails(), "getting user details") )
+    userDetails()$displayName #return name after validation
   })
 
   ## Workaround to avoid shinyaps.io URL problems
@@ -57,20 +62,12 @@ shinyServer(function(input, output,session) {
     }
   })
 
-
-  level_up = 2
+  
   npapers = dim(dat)[1]
 
+  #Create temp csv that we use to track session
   file_path <- file.path(tempdir(), paste0(round(session_id),".csv"))
-  values = reactiveValues(counter = -1)
-  values$user_dat <- data.frame(index   = NA,
-                                title   = NA,
-                                link    = NA,
-                                session = NA,
-                                result  = NA,
-                                person  = NA)
-
-  write_csv(isolate(values$user_dat),file_path)
+  write_csv(isolate(rv$user_dat),file_path)
 
   #Function to sit and watch out swipeinput for decisions on papers.
   observeEvent(input$myswiper,{
@@ -78,60 +75,40 @@ shinyServer(function(input, output,session) {
     #we need to extract the event we saw from the input passed to shiny from javascript
     #This comes in the form "<choice>,<event number>"
     choice = strsplit(input$myswiper, split = ",")[[1]][1]
-
     #print(choice) #for debugging purposes.
-
-    if(choice == "exciting and correct"){
-      ind = button_func(button=1,file_path,values)
-    } else if(choice == "exciting and questionable"){
-      ind = button_func(button=2,file_path,values)
-    } else if(choice == "boring and correct"){
-      ind = button_func(button=3,file_path,values)
-    } else if(choice == "boring and questionable"){
-      ind = button_func(button=4,file_path,values)
-    } else {
-      ret = initial_func(file_path,values)
-      ind = ret$ind
-    }
-
-    print(dat$abstracts[ind])
+    
+    #Send our choice to the rate_paper function which will then send us back a new abstract index to load a new paper with.
+    ind <- rate_paper(choice,file_path,rv)
+    # print(dat$abstracts[ind])
 
     #After we've made our choice, render a new paper' info.
-    values$counter  = values$counter + 1
+    rv$counter      = rv$counter + 1
     output$title    = renderText(dat$titles[ind])
     output$abstract = renderText(dat$abstracts[ind])
     output$authors  = renderText(dat$authors[ind])
-    output$link     = renderUI({
-      a(href=dat$links[ind],dat$links[ind])
-    })
-    print(values$counter)
+    output$link     = renderUI({ a(href=dat$links[ind],dat$links[ind]) })
+    # print(rv$counter) #for debugging purposes
   })
 
-
+  #If the user clicks skip paper, load some new stuff. 
   observeEvent(input$skip,{
-    ind = button_func(button=5,file_path,values)
-    output$title =    renderText(dat$titles[ind])
+    ind             = rate_paper(button=5,file_path,rv) #select the skip option
+    output$title    = renderText(dat$titles[ind])
     output$abstract = renderText(dat$abstracts[ind])
-    output$authors =  renderText(dat$authors[ind])
-    output$link = renderUI({
-      a(href=dat$links[ind],dat$links[ind])
-    })
+    output$authors  = renderText(dat$authors[ind])
+    output$link     = renderUI({ a(href=dat$links[ind],dat$links[ind]) })
   })
+ 
+  #on each rating or skip send the counter sum to update level info. 
+  nextPaper    <- reactive({rv$counter})
+  output$level <- renderText(level_func(nextPaper(),level_up))
+  output$icon  <- renderUI(icon_func(nextPaper(),level_up))
 
-  react2 <- reactive({
-     buttons = c(values$counter,
-                 input$skip)
-     return(sum(buttons))
-  })
-
-
-  output$level = renderText(level_func(react2(),level_up))
-  output$icon = renderUI(icon_func(react2(),level_up))
-
+  #Let the user download their data if they so desire. 
   output$download_data <- downloadHandler(
     filename = "my_ratings.csv",
     content = function(file) {
-      udat = values$user_dat %>%
+      udat = rv$user_dat %>%
         separate(result,into=c("exciting","questionable"),sep="_") %>%
         transmute(title,link,exciting,questionable,session) %>%
         mutate(user_id = session) %>% select(-session)
@@ -141,46 +118,37 @@ shinyServer(function(input, output,session) {
 })
 
 
-button_func <- function(button_val,file_path,values){
-  button_names <- c("excite_correct",
-                    "excite_question",
-                    "boring_correct",
-                    "boring_question",
-                    "skipped_unsure")
-
-  vals = 1:dim(dat)[1]
-  new_ind = sample(vals[-isolate(values$user_dat$index)],1)
-  click_number = dim(isolate(values$user_dat))[1]
-  values$user_dat[click_number,5] <- button_names[button_val]
-  new_row = data.frame(index = new_ind,
-                       title = dat$titles[new_ind],
-                       link = dat$links[new_ind],
-                       session = session_id,
-                       result = NA,
-                       person = isolate(rv$person_id))
+rate_paper <- function(choice, file_path, rv){
   
-  values$user_dat <- rbind(values$user_dat,new_row)
-  write_csv(isolate(values$user_dat),file_path)
-  drop_upload(file_path,
-              "shiny/2016/papr/",
-              dtoken = token)
+  #is this the first time the paper is being run?
+  initializing <-  choice == "initializing"
+  
+  vals <- 1:dim(dat)[1] #index of all papers in data
+  
+  if(initializing){
+    new_ind <- sample(vals,1) #Grab our first paper!
+  } else {
+    new_ind <- sample(vals[-isolate(rv$user_dat$index)],1) #randomly grab a new paper but ignore the just read one
+  }
+  #Make a new row for our session data. 
+  new_row <- data.frame(index   = new_ind,
+                        title   = dat$titles[new_ind],
+                        link    = dat$links[new_ind],
+                        session = session_id,
+                        result  = NA,
+                        person  = isolate(rv$person_id))
+  
+  
+  if(initializing){ #If this is the first time we're running the function create the dataframe for session
+    rv$user_dat <- new_row #add new empty row the csv
+  } else { #If this is a normal rating after initialization append a new row to our session df
+    rv$user_dat[rv$counter,5] <- choice #Put the last review into the review slot of their data. 
+    rv$user_dat <- rbind(rv$user_dat,new_row) #add a new empty row to dataframe. 
+  }
+  
+  write_csv(isolate(rv$user_dat),file_path) #write the csv
+  drop_upload(file_path, "shiny/2016/papr/", dtoken = token) #upload to dropbox too.
   return(new_ind)
-}
-
-
-initial_func <- function(file_path,values){
-  ind = sample(1:dim(dat)[1],size=1)
-  values$user_dat <- data.frame(index = ind,
-                                title = dat$titles[ind],
-                                link = dat$links[ind],
-                                session = session_id,
-                                result = NA,
-                                person = isolate(rv$person_id))
-  write_csv(values$user_dat,file_path)
-  drop_upload(file_path,
-              "shiny/2016/papr/",
-              dtoken = token)
-  return(list(ind=ind,values=values))
 }
 
 
