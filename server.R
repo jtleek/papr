@@ -11,7 +11,7 @@ library(shiny)
 #Some constants that can be done outside of the shiny server session. 
 dat <- read_csv("./full_biorxiv_data.csv") #CSV of paper info
 token <- readRDS("./papr-drop.rds")
-session_id <-  as.numeric(Sys.time())
+session_id <- as.numeric(Sys.time())
 level_up <- 3 #Number of papers needed to review to level up. 
 
 #Google authentication details
@@ -79,7 +79,6 @@ shinyServer(function(input, output,session) {
     
     #Send our choice to the rate_paper function which will then send us back a new abstract index to load a new paper with.
     ind <- rate_paper(choice,file_path,rv)
-  
     # print(dat$abstracts[ind])
 
     #After we've made our choice, render a new paper' info.
@@ -91,15 +90,13 @@ shinyServer(function(input, output,session) {
     # print(rv$counter) #for debugging purposes
   })
 
-  #If the user clicks skip paper load some new stuff. 
+  #If the user clicks skip paper, load some new stuff. 
   observeEvent(input$skip,{
     ind             = rate_paper(button=5,file_path,rv) #select the skip option
     output$title    = renderText(dat$titles[ind])
     output$abstract = renderText(dat$abstracts[ind])
     output$authors  = renderText(dat$authors[ind])
-    output$link     = renderUI({
-      a(href=dat$links[ind],dat$links[ind])
-    })
+    output$link     = renderUI({ a(href=dat$links[ind],dat$links[ind]) })
   })
  
   #on each rating or skip send the counter sum to update level info. 
@@ -129,7 +126,7 @@ rate_paper <- function(choice, file_path, rv){
   vals <- 1:dim(dat)[1] #index of all papers in data
   
   if(initializing){
-    new_ind <- sample(1:dim(dat)[1],size=1) #Grab our first paper!
+    new_ind <- sample(vals,1) #Grab our first paper!
   } else {
     new_ind <- sample(vals[-isolate(rv$user_dat$index)],1) #randomly grab a new paper but ignore the just read one
   }
@@ -141,10 +138,10 @@ rate_paper <- function(choice, file_path, rv){
                         result  = NA,
                         person  = isolate(rv$person_id))
   
-  #If this is the first time we're running the function create the datastore for session
-  if(initializing){
+  
+  if(initializing){ #If this is the first time we're running the function create the dataframe for session
     rv$user_dat <- new_row #add new empty row the csv
-  } else {
+  } else { #If this is a normal rating after initialization append a new row to our session df
     rv$user_dat[rv$counter,5] <- choice #Put the last review into the review slot of their data. 
     rv$user_dat <- rbind(rv$user_dat,new_row) #add a new empty row to dataframe. 
   }
