@@ -1,8 +1,10 @@
 papa-drop.rds
 *.rds
+*.Rproj
 .DS_Store
 .Rhistory
 .Rprofile
 .Rapp.history
 papr-drop.rds
 rsconnect/
+.Rproj.user
