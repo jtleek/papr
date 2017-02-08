@@ -8,6 +8,8 @@ library(googleAuthR)
 library(googleID)
 library(shiny)
 
+source("google_api_info.R")
+
 #Some constants that can be done outside of the shiny server session. 
 dat <- read_csv("./full_biorxiv_data.csv") #CSV of paper info
 token <- readRDS("./papr-drop.rds")
@@ -34,6 +36,10 @@ rv <- reactiveValues(
 
 shinyServer(function(input, output,session) {
   
+  #Create temp csv that we use to track session
+  file_path <- file.path(tempdir(), paste0(round(session_id),".csv"))
+  write_csv(isolate(rv$user_dat),file_path)
+  
   ## Authentication
   accessToken <- callModule(googleAuth, "gauth_login",
                             login_class = "btn btn-primary",
@@ -48,7 +54,7 @@ shinyServer(function(input, output,session) {
     details #return user information
   })
   
-  # Display user's Google display name after successful login
+  # Start datastore and display user's Google display name after successful login
   output$display_username <- renderText({
     validate( need(userDetails(), "getting user details") )
     paste("Welcome,", userDetails()$displayName) #return name after validation
@@ -62,34 +68,6 @@ shinyServer(function(input, output,session) {
     }
   })
 
-  
-  npapers = dim(dat)[1]
-
-  #Create temp csv that we use to track session
-  file_path <- file.path(tempdir(), paste0(round(session_id),".csv"))
-  write_csv(isolate(rv$user_dat),file_path)
-
-  #Function to sit and watch out swipeinput for decisions on papers.
-  observeEvent(input$myswiper,{
-
-    #we need to extract the event we saw from the input passed to shiny from javascript
-    #This comes in the form "<choice>,<event number>"
-    choice = strsplit(input$myswiper, split = ",")[[1]][1]
-    #print(choice) #for debugging purposes.
-    
-    #Send our choice to the rate_paper function which will then send us back a new abstract index to load a new paper with.
-    ind <- rate_paper(choice,file_path,rv)
-    # print(dat$abstracts[ind])
-
-    #After we've made our choice, render a new paper' info.
-    rv$counter      = rv$counter + 1
-    output$title    = renderText(dat$titles[ind])
-    output$abstract = renderText(dat$abstracts[ind])
-    output$authors  = renderText(dat$authors[ind])
-    output$link     = renderUI({ a(href=dat$links[ind],dat$links[ind]) })
-    # print(rv$counter) #for debugging purposes
-  })
-
   #If the user clicks skip paper, load some new stuff. 
   observeEvent(input$skip,{
     choice = "skipped"
@@ -99,12 +77,30 @@ shinyServer(function(input, output,session) {
     output$authors  = renderText(dat$authors[ind])
     output$link     = renderUI({ a(href=dat$links[ind],dat$links[ind]) })
   })
+  
+  #On the interaction with the swipe card do this stuff
+  observeEvent(input$cardSwiped,{
+    
+    #Get swipe results from javascript
+    swipeResults <- input$cardSwiped
+    print(swipeResults)       
+    
+    if(swipeResults != "deciding"){
+      #Send this swipe result to the rating function to get a new index for a new paper
+      ind <- rate_paper(swipeResults,file_path,rv)
+      print(paste("ind:", ind));
+      selection <- dat[ind,] #grab info on new paper
+      session$sendCustomMessage(type = "sendingpapers", selection) #send it over to javascript
+    }
  
+  })
+  
   #on each rating or skip send the counter sum to update level info. 
   nextPaper    <- reactive({rv$counter})
   output$level <- renderText(level_func(nextPaper(),level_up))
   output$icon  <- renderUI(icon_func(nextPaper(),level_up))
 
+  
   #Let the user download their data if they so desire. 
   output$download_data <- downloadHandler(
     filename = "my_ratings.csv",
@@ -123,7 +119,7 @@ shinyServer(function(input, output,session) {
 rate_paper <- function(choice, file_path, rv){
   
   #is this the first time the paper is being run?
-  initializing <-  choice == "initializing"
+  initializing <- choice == "initializing"
   
   vals <- 1:dim(dat)[1] #index of all papers in data
   
@@ -152,7 +148,6 @@ rate_paper <- function(choice, file_path, rv){
   drop_upload(file_path, "shiny/2016/papr/", dtoken = token) #upload to dropbox too.
   return(new_ind)
 }
-
 
 level_func = function(x,level_up){
   if(x < level_up){return("Undergrad")}

@@ -102,6 +102,15 @@ navbarPage(
            fluidPage(includeMarkdown("./about.md"))),
   tabPanel("Help",
            fluidPage(includeMarkdown("./help.md"))),
+  tabPanel("Experimental",
+           fluidPage(
+             div(id = "swipeCard", 
+                 h3(id = "cardTitle", "Title"),
+                 hr(),
+                 p(id = "cardAbstract", "Abstract content")
+                )
+           )
+        ),
   collapsible = TRUE,
   windowTitle = "papr - peer review, but easier"
 )

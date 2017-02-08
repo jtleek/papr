@@ -1,3 +1,99 @@
 #paper_info :hover {
    cursor: pointer;
 }
+
+#swipeCard {
+    max-width: 500px;
+    margin: 0 auto;
+    border: 1px solid #ccc;
+    padding: 8px;
+    box-shadow: 10px 10px 5px #ccc;
+}
+
+.swipe-left {
+    -webkit-animation: swipe-left 1s forwards;
+            animation: swipe-left 1s forwards;
+}
+
+.swipe-right {
+    -webkit-animation: swipe-right 1s forwards;
+            animation: swipe-right 1s forwards;
+}
+
+
+.swipe-up {
+    -webkit-animation: swipe-up 1s forwards;
+            animation: swipe-up 1s forwards;
+}
+
+.swipe-down {
+    -webkit-animation: swipe-down 1s forwards;
+            animation: swipe-down 1s forwards;
+}
+
+@-webkit-keyframes swipe-left {
+    to {
+        -webkit-transform: rotate(-13deg) translate3d(-100%, 0, 0);
+                transform: rotate(-13deg) translate3d(-100%, 0, 0);
+        opacity: 0;
+    }
+}
+
+@keyframes swipe-left {
+    to {
+        -webkit-transform: rotate(-13deg) translate3d(-100%, 0, 0);
+                transform: rotate(-13deg) translate3d(-100%, 0, 0);
+        opacity: 0;
+    }
+}
+
+@-webkit-keyframes swipe-right {
+    to {
+        -webkit-transform: rotate(13deg) translate3d(100%, 0, 0);
+                transform: rotate(13deg) translate3d(100%, 0, 0);
+        opacity: 0;
+    }
+}
+
+@keyframes swipe-right {
+    to {
+        -webkit-transform: rotate(13deg) translate3d(100%, 0, 0);
+                transform: rotate(13deg) translate3d(100%, 0, 0);
+        opacity: 0;
+    }
+}
+
+
+@-webkit-keyframes swipe-up {
+    to {
+        -webkit-transform: rotate(13deg) translate3d(0, -100%, 0);
+                transform: rotate(13deg) translate3d(0, -100%, 0);
+        opacity: 0;
+    }
+}
+
+@keyframes swipe-up {
+    to {
+        -webkit-transform: rotate(13deg) translate3d(0, -100%, 0);
+                transform: rotate(13deg) translate3d(0, -100%, 0);
+        opacity: 0;
+    }
+}
+
+
+
+@-webkit-keyframes swipe-down {
+    to {
+        -webkit-transform: rotate(13deg) translate3d(0, 100%, 0);
+                transform: rotate(13deg) translate3d(0, 100%, 0);
+        opacity: 0;
+    }
+}
+
+@keyframes swipe-down{
+    to {
+        -webkit-transform: rotate(13deg) translate3d(0, 100%, 0);
+                transform: rotate(13deg) translate3d(0, 100%, 0);
+        opacity: 0;
+    }
+}
