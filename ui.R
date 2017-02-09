@@ -80,37 +80,18 @@ navbarPage(
                a(href = "https://twitter.com/intent/tweet?text=Check%20out%20papr%20its%20like%20Tinder%20for%20preprints%20https://jhubiostatistics.shinyapps.io/papr", icon("twitter")),
                a(href = "https://www.facebook.com/sharer/sharer.php?u=https%3A//jhubiostatistics.shinyapps.io/papr", icon("facebook"))
                ),
-             mainPanel(fluidPage(div(
-               id = "paper_info",
-               #This div is used javascript as the area the swipes are registered.
-               div(
-                 id = "paper_text",
-                 h5(em("click and swipe abstract to rate"), align = "center"),
-                 hr(),
-                 h5("Title:\n"),
-                 p(textOutput("title")),
-                 h5("Authors:\n"),
-                 p(textOutput("authors")),
-                 h5("Abstract:\n"),
-                 em(textOutput("abstract")),
-                 h5("Link:\n"),
-                 uiOutput("link")
+             mainPanel(fluidPage(
+               div(id = "swipeCard", 
+                   h3(id = "cardTitle", "Title"),
+                   hr(),
+                   p(id = "cardAbstract", "Abstract content")
                )
-             )))
+             ))
              )),
   tabPanel("About",
            fluidPage(includeMarkdown("./about.md"))),
   tabPanel("Help",
            fluidPage(includeMarkdown("./help.md"))),
-  tabPanel("Experimental",
-           fluidPage(
-             div(id = "swipeCard", 
-                 h3(id = "cardTitle", "Title"),
-                 hr(),
-                 p(id = "cardAbstract", "Abstract content")
-                )
-           )
-        ),
   collapsible = TRUE,
   windowTitle = "papr - peer review, but easier"
 )
