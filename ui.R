@@ -62,12 +62,12 @@ navbarPage(
                   </table>"
                ),
                hr(),
-               actionButton(
-                 "skip",
-                 "Unsure - skip paper",
-                 icon = icon("question"),
-                 width = '200px'
-               ),
+               # actionButton(
+               #   "skip",
+               #   "Unsure - skip paper",
+               #   icon = icon("question"),
+               #   width = '200px'
+               # ),
                h3(""),
                swiperButton("myswiper"), #Place our swiper button here, but again, we hide it.
                hr(),

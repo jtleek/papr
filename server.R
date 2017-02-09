@@ -69,14 +69,14 @@ shinyServer(function(input, output,session) {
   })
 
   #If the user clicks skip paper, load some new stuff. 
-  observeEvent(input$skip,{
-    choice = "skipped"
-    ind             = rate_paper(choice,file_path,rv) #select the skip option
-    output$title    = renderText(dat$titles[ind])
-    output$abstract = renderText(dat$abstracts[ind])
-    output$authors  = renderText(dat$authors[ind])
-    output$link     = renderUI({ a(href=dat$links[ind],dat$links[ind]) })
-  })
+  # observeEvent(input$skip,{
+  #   choice = "skipped"
+  #   ind             = rate_paper(choice,file_path,rv) #select the skip option
+  #   output$title    = renderText(dat$titles[ind])
+  #   output$abstract = renderText(dat$abstracts[ind])
+  #   output$authors  = renderText(dat$authors[ind])
+  #   output$link     = renderUI({ a(href=dat$links[ind],dat$links[ind]) })
+  # })
   
   #On the interaction with the swipe card do this stuff
   observeEvent(input$cardSwiped,{
@@ -85,14 +85,14 @@ shinyServer(function(input, output,session) {
     swipeResults <- input$cardSwiped
     print(swipeResults)       
     
-    if(swipeResults != "deciding"){
+    if(!(swipeResults %in% c("skipped","deciding"))){
       #Send this swipe result to the rating function to get a new index for a new paper
       ind <- rate_paper(swipeResults,file_path,rv)
       print(paste("ind:", ind));
       selection <- dat[ind,] #grab info on new paper
       session$sendCustomMessage(type = "sendingpapers", selection) #send it over to javascript
     }
- 
+   rv$counter = rv$counter + 1
   })
   
   #on each rating or skip send the counter sum to update level info. 
