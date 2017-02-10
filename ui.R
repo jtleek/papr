@@ -2,21 +2,6 @@ library(shiny)
 library(markdown)
 library(shinythemes)
 
-#Function that defines our swiper functionality. 
-#We call it a button because unless i'm mistaken it has to have some element to attach
-#our input to. In this case a button that we hide(because we target the whole page.)
-swiperButton <- function(inputId, value = "") {
-  tagList(singleton(tags$head(
-    tags$script(src = "touchSwipe.js"),
-    tags$script(src = "shinySwiper.js"),
-    tags$link(rel = "stylesheet", type = "text/css", href = "appStyle.css")
-  )),
-  tags$p(id = inputId,
-         class = "swiper",
-         "initializing"))
-}
-
-
 navbarPage(
   title = "papr",
   tabPanel(
@@ -31,6 +16,11 @@ navbarPage(
   tabPanel("Rate",
            sidebarLayout(
              sidebarPanel(
+               tags$head(
+                 tags$script(src = "touchSwipe.js"),
+                 tags$script(src = "shinySwiper.js"),
+                 tags$link(rel = "stylesheet", type = "text/css", href = "appStyle.css")
+               ),
                h3("Rate the paper"),
                hr(),
                HTML(
@@ -62,15 +52,9 @@ navbarPage(
                   </table>"
                ),
                hr(),
-               # actionButton(
-               #   "skip",
-               #   "Unsure - skip paper",
-               #   icon = icon("question"),
-               #   width = '200px'
-               # ),
-               h3(""),
-               swiperButton("myswiper"), #Place our swiper button here, but again, we hide it.
-               hr(),
+               # h3(""),
+               # swiperButton("myswiper"), #Place our swiper button here, but again, we hide it.
+               # hr(),
                h3("Rate papers & level up:"),
                uiOutput("icon"),
                em(textOutput("level")),
