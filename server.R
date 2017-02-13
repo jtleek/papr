@@ -50,7 +50,7 @@ shinyServer(function(input, output,session) {
     validate( need(accessToken(), "not logged in") )
     rv$login <- TRUE #Record the user as logged in
     details <- with_shiny(get_user_info, shiny_access_token = accessToken())  #grab the user info
-    rv$person_id <- details$id #assign the user id to our reactive variable
+    rv$person_id <- digest::digest(details$id) #assign the user id to our reactive variable
     details #return user information
   })
   
