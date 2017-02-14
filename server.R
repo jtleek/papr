@@ -10,31 +10,69 @@ library(shiny)
 
 source("google_api_info.R")
 
-#Some constants that can be done outside of the shiny server session. 
-dat <- read_csv("./full_biorxiv_data.csv") #CSV of paper info
-token <- readRDS("./papr-drop.rds")
-session_id <- as.numeric(Sys.time())
-level_up <- 3 #Number of papers needed to review to level up. 
-
-#Google authentication details
-options(googleAuthR.scopes.selected = c("https://www.googleapis.com/auth/userinfo.email",
-                                        "https://www.googleapis.com/auth/userinfo.profile"))
-
-#Variables that get updated throughout the session. 
-#Need to be wrapped in reactiveValues to make sure their updates propigate
-rv <- reactiveValues(
-  login = FALSE,
-  person_id = 12345,
-  counter = -1,
-  user_dat = data.frame(index   = NA,
-                        title   = NA,
-                        link    = NA,
-                        session = NA,
-                        result  = NA,
-                        person  = NA)
-)
-
 shinyServer(function(input, output,session) {
+  
+  #Some constants that can be done outside of the shiny server session. 
+  dat <- read_csv("./full_biorxiv_data.csv") #CSV of paper info
+  token <- readRDS("./papr-drop.rds")
+  session_id <- as.numeric(Sys.time())
+  level_up <- 4 #Number of papers needed to review to level up. 
+  
+  #Google authentication details
+  options(googleAuthR.scopes.selected = c("https://www.googleapis.com/auth/userinfo.email",
+                                          "https://www.googleapis.com/auth/userinfo.profile"))
+  
+  #Variables that get updated throughout the session. 
+  #Need to be wrapped in reactiveValues to make sure their updates propigate
+  rv <- reactiveValues(
+    login = FALSE,
+    person_id = 12345,
+    counter = -1,
+    user_dat = data.frame(index   = NA,
+                          title   = NA,
+                          link    = NA,
+                          session = NA,
+                          result  = NA,
+                          person  = NA)
+  )
+  
+  #########################################################################################################
+  # Function for rating a given paper. 
+  #########################################################################################################
+  rate_paper <- function(choice, file_path, rv){
+    
+    #is this the first time the paper is being run?
+    initializing <- choice == "initializing"
+    
+    vals <- 1:dim(dat)[1] #index of all papers in data
+    
+    if(initializing){
+      new_ind <- sample(vals,1) #Grab our first paper!
+    } else {
+      new_ind <- sample(vals[-isolate(rv$user_dat$index)],1) #randomly grab a new paper but ignore the just read one
+    }
+    #Make a new row for our session data. 
+    new_row <- data.frame(index   = new_ind,
+                          title   = dat$titles[new_ind],
+                          link    = dat$links[new_ind],
+                          session = session_id,
+                          result  = NA,
+                          person  = isolate(rv$person_id))
+    
+    
+    if(initializing){ #If this is the first time we're running the function create the dataframe for session
+      rv$user_dat <- new_row #add new empty row the csv
+    } else { #If this is a normal rating after initialization append a new row to our session df
+      rv$user_dat[1,5] <- choice #Put the last review into the review slot of their data. 
+      rv$user_dat <- rbind(new_row, rv$user_dat) #add a new empty row to dataframe. 
+    }
+    
+    write_csv(isolate(rv$user_dat),file_path) #write the csv
+    drop_upload(file_path, "shiny/2016/papr/", dtoken = token) #upload to dropbox too.
+    return(new_ind)
+  }
+  
+  #########################################################################################################
   
   #Create temp csv that we use to track session
   file_path <- file.path(tempdir(), paste0(round(session_id),".csv"))
@@ -64,7 +102,7 @@ shinyServer(function(input, output,session) {
   observe({
     if (rv$login) {
       shinyjs::onclick("gauth_login-googleAuthUi",
-                       shinyjs::runjs(paste0("window.location.href =",site, ";")))
+                       shinyjs::runjs(paste0("window.location.href =", site, ";")))
     }
   })
 
@@ -91,8 +129,9 @@ shinyServer(function(input, output,session) {
       print(paste("ind:", ind));
       selection <- dat[ind,] #grab info on new paper
       session$sendCustomMessage(type = "sendingpapers", selection) #send it over to javascript
+      rv$counter = rv$counter + 1
     }
-   rv$counter = rv$counter + 1
+    print(rv$counter)
   })
   
   #on each rating or skip send the counter sum to update level info. 
@@ -115,39 +154,6 @@ shinyServer(function(input, output,session) {
   )
 })
 
-
-rate_paper <- function(choice, file_path, rv){
-  
-  #is this the first time the paper is being run?
-  initializing <- choice == "initializing"
-  
-  vals <- 1:dim(dat)[1] #index of all papers in data
-  
-  if(initializing){
-    new_ind <- sample(vals,1) #Grab our first paper!
-  } else {
-    new_ind <- sample(vals[-isolate(rv$user_dat$index)],1) #randomly grab a new paper but ignore the just read one
-  }
-  #Make a new row for our session data. 
-  new_row <- data.frame(index   = new_ind,
-                        title   = dat$titles[new_ind],
-                        link    = dat$links[new_ind],
-                        session = session_id,
-                        result  = NA,
-                        person  = isolate(rv$person_id))
-  
-  
-  if(initializing){ #If this is the first time we're running the function create the dataframe for session
-    rv$user_dat <- new_row #add new empty row the csv
-  } else { #If this is a normal rating after initialization append a new row to our session df
-    rv$user_dat[1,5] <- choice #Put the last review into the review slot of their data. 
-    rv$user_dat <- rbind(new_row, rv$user_dat) #add a new empty row to dataframe. 
-  }
-  
-  write_csv(isolate(rv$user_dat),file_path) #write the csv
-  drop_upload(file_path, "shiny/2016/papr/", dtoken = token) #upload to dropbox too.
-  return(new_ind)
-}
 
 level_func = function(x,level_up){
   if(x < level_up){return("Undergrad")}

@@ -21,7 +21,7 @@ navbarPage(
                  tags$script(src = "shinySwiper.js"),
                  tags$link(rel = "stylesheet", type = "text/css", href = "appStyle.css")
                ),
-               h3("Rate the paper"),
+               h3("Swipe abstract to rate the paper"),
                hr(),
                HTML(
                   "<table style='line-height:1.5em;'>
