@@ -1,8 +1,8 @@
 // Shorthand for $( document ).ready()
 
 $(function() {
-  
-  //Grabs the latest paper from the server and displays it to our card. 
+
+  //Grabs the latest paper from the server and displays it to our card.
   Shiny.addCustomMessageHandler("sendingpapers",
     function(data) {
       console.log(data);
@@ -76,5 +76,13 @@ $(function() {
 
     //wait one second and Kick off stuff by sending an initialized message to R.
     window.setTimeout(() =>  Shiny.onInputChange("cardSwiped", "initializing"), 1000);
+
+   //On mobile when a user tries to swipe up or down they simply get moved around the page. We change//
+   //make it such that when they scroll over the card we disable page scrolling. They will still be able to
+   //scroll by using the sides.
+   var fixed = document.getElementById('swipeCard');
+   fixed.addEventListener('touchmove', function(e) {
+           e.preventDefault();
+   }, false);
 
 });
