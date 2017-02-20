@@ -4,7 +4,12 @@ This is the __papr__ app. Think of it as "[Tinder](https://www.gotinder.com/) fo
 
 # Your data and research
 
-The ratings you submit through this app are not associated in any way with any information about you. The data may be used in aggregate to improve the functionality of the app or to research community ratings of pre-prints.
+When you sign in and swipe with papr we store a two things: 
+
+-  An ananomized user id.
+-  Your decisions on the abstracts you swiped.  
+
+We will be using this data (in future releases) to help figure out what type of papers you like. Knowing this information will allow us to show you papers that are more revelent to your interests but also will let you find other researchers that are most like you (if you choose to make your identity known to the app). A kind of academic sphere of interest. 
 
 # Author
 
