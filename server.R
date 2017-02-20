@@ -12,8 +12,21 @@ source("google_api_info.R")
 
 shinyServer(function(input, output,session) {
   
+  #recommender
+  rec <- function(x = m, row = 1, choice = "exciting and correct"){
+    #remove columns we've already seen
+    x <- x[,-which(colnames(x) %in% isolate(rv$user_dat$index))]
+    if (choice %in% c("exciting and correct","exciting and questionable")){
+      return(as.integer(names(head(sort(x[row,]),10))))
+    }
+    if (choice %in% c("boring and correct","boring and questionable") ){
+      return(as.integer(names(tail(sort(x[row,]),11))[1:10]))
+    }
+  }
+  
   #Some constants that can be done outside of the shiny server session. 
-  dat <- read_csv("./full_biorxiv_data.csv") #CSV of paper info
+  load("./biorxiv_data.Rda") #R dataset of paper info
+  load("./rec_matrix.Rda") #R dataset of recommended papers
   token <- readRDS("./papr-drop.rds")
   session_id <- as.numeric(Sys.time())
   level_up <- 4 #Number of papers needed to review to level up. 
@@ -44,17 +57,23 @@ shinyServer(function(input, output,session) {
     #is this the first time the paper is being run?
     initializing <- choice == "initializing"
     
-    vals <- 1:dim(dat)[1] #index of all papers in data
+    #are they deciding?
+    deciding <- choice == "deciding"
+    
+    vals <- dat$index #index of all papers in data
     
     if(initializing){
       new_ind <- sample(vals,1) #Grab our first paper!
+    } else if(runif(1)<.5 & !deciding) {
+      new_ind <- sample(rec(m,isolate(rv$user_dat$index)[1], choice = choice),1)
+      print("using our sweet recommendor")
     } else {
-      new_ind <- sample(vals[-isolate(rv$user_dat$index)],1) #randomly grab a new paper but ignore the just read one
-    }
+      new_ind <- sample(vals[-which(vals %in% isolate(rv$user_dat$index))],1) #randomly grab a new paper but ignore the just read one
+      }
     #Make a new row for our session data. 
     new_row <- data.frame(index   = new_ind,
-                          title   = dat$titles[new_ind],
-                          link    = dat$links[new_ind],
+                          title   = dat$titles[dat$index == new_ind],
+                          link    = dat$links[dat$index == new_ind],
                           session = session_id,
                           result  = NA,
                           person  = isolate(rv$person_id))
