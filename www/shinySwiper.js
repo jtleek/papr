@@ -1,7 +1,12 @@
 // Shorthand for $( document ).ready()
 
 $(function() {
-
+  //scroll by using the sides.
+   var fixed = document.getElementById('swipeCard');
+   fixed.addEventListener('touchmove', function(e) {
+           e.preventDefault();
+   }, false);
+  
   //Grabs the latest paper from the server and displays it to our card.
   Shiny.addCustomMessageHandler("sendingpapers",
     function(data) {
@@ -17,6 +22,8 @@ $(function() {
       var abstract = $("#cardAbstract");
       title.text(title_text);
       abstract.text(abstract_text);
+      //bring the card back to the middle.
+      swipeCard.removeClass();
   }
 
   $("#swipeCard").swipe( {
@@ -64,7 +71,7 @@ $(function() {
           Shiny.onInputChange("cardSwiped", "deciding");
 
           //bring the card back to the middle.
-          swipeCard.removeClass();
+          //swipeCard.removeClass();
 
         }
           , 1000);
@@ -78,11 +85,7 @@ $(function() {
     window.setTimeout(() =>  Shiny.onInputChange("cardSwiped", "initializing"), 1000);
 
    //On mobile when a user tries to swipe up or down they simply get moved around the page. We change//
-   //make it such that when they scroll over the card we disable page scrolling. They will still be able to
-   //scroll by using the sides.
-   var fixed = document.getElementById('swipeCard');
-   fixed.addEventListener('touchmove', function(e) {
-           e.preventDefault();
-   }, false);
+   //make it such that when they scroll over the card we disable page scrolling. They will still be able 
+   
 
 });
