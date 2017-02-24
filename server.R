@@ -13,20 +13,35 @@ source("google_api_info.R")
 shinyServer(function(input, output,session) {
   
   #recommender
-  rec <- function(x = m, row = 1, choice = "exciting and correct"){
+  rec <- function(x = term_pca_df, user_PC = isolate(rv$pc), user_dat_index = isolate(rv$user_dat$index), index =  isolate(rv$user_dat$index)[1], choice = "exciting and correct", output = "user_PC"){
+    
     #remove columns we've already seen
-    x <- x[,-which(colnames(x) %in% isolate(rv$user_dat$index))]
     if (choice %in% c("exciting and correct","exciting and questionable")){
-      return(as.integer(names(head(sort(x[row,]),10))))
+      user_PC <- colMeans(rbind(user_PC, x[x$index == index, 1:3]))
     }
     if (choice %in% c("boring and correct","boring and questionable") ){
-      return(as.integer(names(tail(sort(x[row,]),11))[1:10]))
+      user_PC <- colMeans(rbind(user_PC, -x[x$index == index, 1:3]))
+    }
+    if (output == "user_PC"){
+      return(user_PC)
+    }
+    if (output == "recs"){
+      x <- x[-which(x$index %in% user_dat_index),]
+      dist <- data_frame(index = x$index, dist = as.vector(sqrt(  
+        (as.numeric(user_PC[1])-x[1])^2 + 
+          (as.numeric(user_PC[2])-x[2])^2 + 
+          (as.numeric(user_PC[3])-x[3])^2)))
+      recs <- tail(arrange(dist,dist),10) %>%
+        .[['index']] %>%
+        unlist() %>%
+        as.integer()
+      return(recs)
     }
   }
   
   #Some constants that can be done outside of the shiny server session. 
   load("./biorxiv_data.Rda") #R dataset of paper info
-  load("./rec_matrix.Rda") #R dataset of recommended papers
+  load("./term_pca_df.Rda") #R dataset of paper PCA
   token <- readRDS("./papr-drop.rds")
   session_id <- as.numeric(Sys.time())
   level_up <- 4 #Number of papers needed to review to level up. 
@@ -41,6 +56,7 @@ shinyServer(function(input, output,session) {
     login = FALSE,
     person_id = 12345,
     counter = -1,
+    pc = colMeans(term_pca_df[1:3]),
     user_dat = data.frame(index   = NA,
                           title   = NA,
                           link    = NA,
@@ -64,11 +80,13 @@ shinyServer(function(input, output,session) {
     
     if(initializing){
       new_ind <- sample(vals,1) #Grab our first paper!
-    } else if(runif(1)<.5 & !deciding) {
-      new_ind <- sample(rec(m,isolate(rv$user_dat$index)[1], choice = choice),1)
+    } else if(runif(1)<.75 & !deciding) {
+      new_ind <- sample(rec(choice = choice, output = "recs"),1)
+      rv$pc <- rec(choice = choice, output = "user_PC")
       print("using our sweet recommendor")
     } else {
       new_ind <- sample(vals[-which(vals %in% isolate(rv$user_dat$index))],1) #randomly grab a new paper but ignore the just read one
+      rv$pc <- rec(choice = choice, output = "user_PC")
       }
     #Make a new row for our session data. 
     new_row <- data.frame(index   = new_ind,
