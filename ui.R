@@ -1,6 +1,7 @@
 library(shiny)
 library(markdown)
 library(shinythemes)
+library(plotly)
 
 navbarPage(
   title = "papr",
@@ -72,6 +73,9 @@ navbarPage(
                )
              ))
              )),
+  tabPanel("PCA Location",
+           fluidPage(
+             plotlyOutput("plotly"))),
   tabPanel("About",
            fluidPage(includeMarkdown("./about.md"))),
   tabPanel("Help",
