@@ -46,11 +46,11 @@ shinyServer(function(input, output, session) {
       }
     }
   
-  #Some constants that can be done outside of the shiny server session.
   load("./biorxiv_data.Rda") #R dataset of paper info
   load("./term_pca_df.Rda") #R dataset of paper PCA
   token <- readRDS("./papr-drop.rds")
-  session_id <- as.numeric(Sys.time())
+
+    session_id <- as.numeric(Sys.time())
   level_up <- 4 #Number of papers needed to review to level up.
   
   #Google authentication details
@@ -60,7 +60,7 @@ shinyServer(function(input, output, session) {
       "https://www.googleapis.com/auth/userinfo.profile"
     )
   )
-  
+
   #Variables that get updated throughout the session.
   #Need to be wrapped in reactiveValues to make sure their updates propigate
   rv <- reactiveValues(
@@ -125,6 +125,12 @@ shinyServer(function(input, output, session) {
     
     write_csv(isolate(rv$user_dat), file_path) #write the csv
     drop_upload(file_path, "shiny/2016/papr/", dtoken = token) #upload to dropbox too.
+    
+    file_path2 <-
+      file.path(tempdir(), paste0("user_dat_",isolate(rv$person_id), ".csv"))
+    write_csv(data.frame(PC1 = isolate(rv$pc[1]), PC2 = isolate(rv$pc[2]), PC3 = isolate(rv$pc[3])), file_path2)
+    drop_upload(file_path2,"shiny/2016/papr/user_dat/", dtoken = token)
+
     return(new_ind)
   }
   
@@ -149,6 +155,9 @@ shinyServer(function(input, output, session) {
       with_shiny(get_user_info, shiny_access_token = accessToken())  #grab the user info
     rv$person_id <-
       digest::digest(details$id) #assign the user id to our reactive variable
+    if(drop_exists(paste0("shiny/2016/papr/user_dat/",isolate(rv$person_id),".csv"), dtoken = token)){
+      rv$pc <- as.numeric(drop_read_csv(paste0("shiny/2016/papr/user_dat/",isolate(rv$person_id),".csv")))
+    }
     details #return user information
   })
   
@@ -178,6 +187,7 @@ shinyServer(function(input, output, session) {
   
   #On the interaction with the swipe card do this stuff
   observeEvent(input$cardSwiped, {
+    
     #Get swipe results from javascript
     swipeResults <- input$cardSwiped
     print(swipeResults)
