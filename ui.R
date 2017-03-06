@@ -9,9 +9,12 @@ navbarPage(
     "Login",
     shinyjs::useShinyjs(),
     sidebarLayout(
-      sidebarPanel(p("Welcome!"),
+      sidebarPanel(p("Welcome! Please fill out the profile below"),
+                   textInput("name","Name"),
+                   textInput("twitter","Twitter handle"),
+                   p("If you'd like to save your responses, please login."),
                    googleAuthR::googleAuthUI("gauth_login")),
-      mainPanel(textOutput("display_username"))
+      mainPanel(textOutput(paste("Welcome,","display_username")))
     )
   ),
   tabPanel("Rate",
