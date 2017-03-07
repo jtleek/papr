@@ -13,9 +13,7 @@ We will be using this data (in future releases) to help figure out what type of 
 
 # Author
 
-It was built by [Jeff Leek](http://jtleek.com/) as an example of the sort of thing we hope to build with the Johns Hopkins Data Science Lab. If you want a web or mobile app prototyped, consider submitting an app idea for free prototyping at our [Prototyping Shop](http://jhudatascience.org/prototyping/).
-
-[Lucy D'Agostino McGowan](http://lucymcgowan.com) and [Nick Strayer](http://nickstrayer.me), [Vanderbilt Biostatistics](http://www.vanderbilt.edu/biostatistics/graduate/) PhD students, added swipe functionality.
+It was built by [Jeff Leek](http://jtleek.com/), [Lucy D'Agostino McGowan](http://lucymcgowan.com), and [Nick Strayer](http://nickstrayer.me) as an example of the sort of thing we hope to build with the Johns Hopkins Data Science Lab. If you want a web or mobile app prototyped, consider submitting an app idea for free prototyping at our [Prototyping Shop](http://jhudatascience.org/prototyping/).
 
 # Terms
 
