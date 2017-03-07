@@ -49,8 +49,8 @@ shinyServer(function(input, output, session) {
   load("./biorxiv_data.Rda") #R dataset of paper info
   load("./term_pca_df.Rda") #R dataset of paper PCA
   token <- readRDS("./papr-drop.rds")
-
-    session_id <- as.numeric(Sys.time())
+  
+  session_id <- as.numeric(Sys.time())
   level_up <- 4 #Number of papers needed to review to level up.
   
   #Google authentication details
@@ -60,7 +60,7 @@ shinyServer(function(input, output, session) {
       "https://www.googleapis.com/auth/userinfo.profile"
     )
   )
-
+  
   #Variables that get updated throughout the session.
   #Need to be wrapped in reactiveValues to make sure their updates propigate
   rv <- reactiveValues(
@@ -128,9 +128,9 @@ shinyServer(function(input, output, session) {
     
     file_path2 <-
       file.path(tempdir(), paste0("user_dat_",isolate(rv$person_id), ".csv"))
-    write_csv(data.frame(PC1 = isolate(rv$pc[1]), PC2 = isolate(rv$pc[2]), PC3 = isolate(rv$pc[3])), file_path2)
+    write_csv(data.frame(name = isolate(input$name), twitter = isolate(input$twitter), PC1 = isolate(rv$pc[1]), PC2 = isolate(rv$pc[2]), PC3 = isolate(rv$pc[3])), file_path2)
     drop_upload(file_path2,"shiny/2016/papr/user_dat/", dtoken = token)
-
+    
     return(new_ind)
   }
   
@@ -155,8 +155,8 @@ shinyServer(function(input, output, session) {
       with_shiny(get_user_info, shiny_access_token = accessToken())  #grab the user info
     rv$person_id <-
       digest::digest(details$id) #assign the user id to our reactive variable
-    if(drop_exists(paste0("shiny/2016/papr/user_dat/",isolate(rv$person_id),".csv"), dtoken = token)){
-      rv$pc <- as.numeric(drop_read_csv(paste0("shiny/2016/papr/user_dat/",isolate(rv$person_id),".csv")))
+    if(drop_exists(paste0("shiny/2016/papr/user_dat/user_dat_",isolate(rv$person_id),".csv"), dtoken = token)){
+      rv$pc <- as.numeric(drop_read_csv(paste0("shiny/2016/papr/user_dat/user_dat_",isolate(rv$person_id),".csv"))[,1:3])
     }
     details #return user information
   })
@@ -230,12 +230,12 @@ shinyServer(function(input, output, session) {
   #PCA plot
   output$plotly <- renderPlotly({
     user_pc_df <- data_frame(PC1 = rv$pc[1],
-                                PC2 = rv$pc[2],
-                                PC3 = rv$pc[3], 
-                                PC4 = NA,
-                                PC5 = NA,
-                                titles = "Your Average",
-                                index = 999999)
+                             PC2 = rv$pc[2],
+                             PC3 = rv$pc[3], 
+                             PC4 = NA,
+                             PC5 = NA,
+                             titles = "Your Average",
+                             index = 999999)
     rbind(user_pc_df, term_pca_df) %>%
       mutate(
         color = ifelse(titles == "Your Average", "purple", "lightblue"),
