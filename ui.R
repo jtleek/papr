@@ -9,13 +9,13 @@ navbarPage(
     "Login",
     shinyjs::useShinyjs(),
     sidebarLayout(
-      sidebarPanel(p("Welcome! Please fill out the profile below"),
+      sidebarPanel(p("Welcome! Log in with Google to log your results."),
+                   googleAuthR::googleAuthUI("gauth_login"),
+                   br(),
+                   p("Consider entering your name & twitter handle to link with other users"),
                    textInput("name","Name"),
-                   textInput("twitter","Twitter handle"),
-                   p("If you'd like to save your responses, please login."),
-                   googleAuthR::googleAuthUI("gauth_login")),
-      mainPanel(textOutput(paste("Welcome,","display_username")))
-    )
+                   textInput("twitter","Twitter handle")),
+      mainPanel(textOutput("display_username")))
   ),
   tabPanel("Rate",
            sidebarLayout(
@@ -100,6 +100,10 @@ navbarPage(
              ) #end div
             ) #end fluidpage
           ),   #end tab
+  tabPanel("Who likes similar papers?",
+           fluidPage(
+             h3("Follow fellow papr users that like similar papers:"),
+             htmlOutput("friends"))),
   tabPanel("About",
            fluidPage(includeMarkdown("./about.md"))),
   tabPanel("Help",

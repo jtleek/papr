@@ -50,6 +50,7 @@ shinyServer(function(input, output, session) {
   load("./term_pca_df.Rda") #R dataset of paper PCA
   token <- readRDS("./papr-drop.rds")
   
+  twitter <- drop_read_csv("shiny/2016/papr/comb_dat/twitter.csv", dtoken = token)
   session_id <- as.numeric(Sys.time())
   level_up <- 4 #Number of papers needed to review to level up.
   
@@ -155,8 +156,8 @@ shinyServer(function(input, output, session) {
       with_shiny(get_user_info, shiny_access_token = accessToken())  #grab the user info
     rv$person_id <-
       digest::digest(details$id) #assign the user id to our reactive variable
-    if(drop_exists(paste0("shiny/2016/papr/user_dat/user_dat_",isolate(rv$person_id),".csv"), dtoken = token)){
-      rv$pc <- as.numeric(drop_read_csv(paste0("shiny/2016/papr/user_dat/user_dat_",isolate(rv$person_id),".csv"))[,1:3])
+     if(isolate(rv$person_id) != 12345 & drop_exists(paste0("shiny/2016/papr/user_dat/user_dat_",isolate(rv$person_id),".csv"), dtoken = token)){
+       rv$pc <- as.numeric(drop_read_csv(paste0("shiny/2016/papr/user_dat/user_dat_",isolate(rv$person_id),".csv"))[,3:5], dtoken = token)
     }
     details #return user information
   })
@@ -166,6 +167,29 @@ shinyServer(function(input, output, session) {
     validate(need(userDetails(), "getting user details"))
     paste("Welcome,", userDetails()$displayName) #return name after validation
   })
+  
+  #output friends!
+
+  output$friends <- renderText({
+    #find users closest to you
+    friend_dist <- data.frame(name = as.character(twitter$name), twitter = as.character(twitter$twitter), dist = as.vector(sqrt(
+      (as.numeric(isolate(rv$pc)[1]) - twitter[,"PC1"]) ^ 2 +
+        (as.numeric(isolate(rv$pc)[2]) - twitter[,"PC2"]) ^ 2 +
+        (as.numeric(isolate(rv$pc)[3]) - twitter[,"PC3"]) ^ 2
+    )), stringsAsFactors = FALSE)
+    friend_handle <- arrange(friend_dist,dist)[1:5,2]
+    friend_name <- arrange(friend_dist,dist)[1:5,1]
+    friend_handle[is.na(friend_handle)]<- friend_name[is.na(friend_name)]<-"LFODichotomize"
+    follow <- function(who, where){
+      paste0(who,": <a href='https://twitter.com/",where,
+             "' class='twitter-follow-button' data-show-count='false'>Follow @",where,"</a><script async src='//platform.twitter.com/widgets.js' charset='utf-8'></script><br>")
+    }
+    paste0(follow(friend_name[1],friend_handle[1]),
+           follow(friend_name[2],friend_handle[2]),
+           follow(friend_name[3],friend_handle[3]),
+           follow(friend_name[4],friend_handle[4]),
+           follow(friend_name[5],friend_handle[5]))
+       })
   
   ## Workaround to avoid shinyaps.io URL problems
   observe({
@@ -187,7 +211,6 @@ shinyServer(function(input, output, session) {
   
   #On the interaction with the swipe card do this stuff
   observeEvent(input$cardSwiped, {
-    
     #Get swipe results from javascript
     swipeResults <- input$cardSwiped
     print(swipeResults)
