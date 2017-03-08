@@ -182,8 +182,12 @@ shinyServer(function(input, output, session) {
     friend_handle <- friend_handle[complete.cases(friend_handle)]
     friend_name <- friend_name[complete.cases(friend_name)]
     follow <- function(who, where){
-      paste0(who,": <a href='https://twitter.com/",where,
-             "' class='twitter-follow-button' data-show-count='false'>Follow @",where,"</a><script async src='//platform.twitter.com/widgets.js' charset='utf-8'></script><br>")
+      paste0(who,
+             ": <a href='https://twitter.com/",
+             where,
+             "' class='twitter-follow-button' data-show-count='false'>Follow @",
+             where,
+             "</a><script async src='//platform.twitter.com/widgets.js' charset='utf-8'></script><br>")
     }
     follow(friend_name,friend_handle)
        })

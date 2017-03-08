@@ -106,7 +106,7 @@ navbarPage(
                  hr(),
                  htmlOutput("friends"),
                  br(),
-                 p("Using your past paper rankings, these are the five users that have the most similar taste in preprints to you."),
+                 p("Using your past paper rankings, these are the users that have the most similar taste in preprints to you."),
                  p("Follow them, tweet at them, collaborate with them, write a new paper for people to rate on Papr!")
              )
             )
