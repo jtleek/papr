@@ -1,21 +1,23 @@
-#PCA_discussion {
-    max-width: 800px;
-    margin: 0 auto;
-    border: 1px solid #ccc;
-    padding: 8px;
-    box-shadow: 10px 10px 5px #ccc;
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px; /* 5px rounded corners */
+  max-width: 800px;
+  margin: 0 auto;
 }
 
+
 #paper_info :hover {
-   cursor: pointer;
+  cursor: pointer;
 }
 
 #swipeCard {
-    max-width: 500px;
-    margin: 0 auto;
-    border: 1px solid #ccc;
-    padding: 8px;
-    box-shadow: 10px 10px 5px #ccc;
+  max-width: 500px;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px; /* 5px rounded corners */
 }
 
 .swipe-left {
