@@ -125,12 +125,22 @@ $(document).ready(function () {
 
 <pre class="r"><code>#read in data
 files &lt;- drop_dir(&quot;shiny/2016/papr/user_dat/&quot;)$path</code></pre>
-<pre><code>## # A tibble: 1 × 5
-##                                           path mime_type    root bytes
-## *                                        &lt;chr&gt;     &lt;chr&gt;   &lt;chr&gt; &lt;int&gt;
-## 1 /shiny/2016/papr/user_dat/user_dat_12345.csv  text/csv dropbox    89
-## # ... with 1 more variables: modified &lt;chr&gt;</code></pre>
-<pre class="r"><code>tbl &lt;- lapply(files, drop_read_csv) %&gt;% bind_rows()</code></pre>
+<pre><code>## # A tibble: 4 × 5
+##                                                                      path
+## *                                                                   &lt;chr&gt;
+## 1 /shiny/2016/papr/user_dat/user_dat_6e03dc1600908901aac8b17283f8be90.csv
+## 2 /shiny/2016/papr/user_dat/user_dat_85decdee18df7ec17e0f0d8fc3931fdb.csv
+## 3                            /shiny/2016/papr/user_dat/user_dat_12345.csv
+## 4 /shiny/2016/papr/user_dat/user_dat_be01e7de2e7c0e76b781bbbd53b61f0c.csv
+## # ... with 4 more variables: mime_type &lt;chr&gt;, root &lt;chr&gt;, bytes &lt;int&gt;,
+## #   modified &lt;chr&gt;</code></pre>
+<pre class="r"><code>tbl &lt;- lapply(files, drop_read_csv) %&gt;% 
+  bind_rows() %&gt;%
+  filter(!is.na(twitter))
+
+file_path &lt;- file.path(tempdir(), &quot;twitter.csv&quot;)
+write_csv(tbl, file_path)
+drop_upload(file_path, &quot;shiny/2016/papr/comb_dat&quot;, dtoken = token)</code></pre>
 
 
 

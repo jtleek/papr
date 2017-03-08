@@ -11,6 +11,7 @@ navbarPage(
       shinyjs::useShinyjs(),
       div(id = "profile", class = "card",
           h3("Welcome to Papr"),
+          em("Think of this as 'Tinder for pre-prints'. If you don't know what Tinder is, think of it as a web app for collecting gut-reactions to pre-prints from the scientific community. Enter your information below and click on the “Rate” tab to begin rating papers."),
           hr(),
           p(textOutput("display_username")),
           p( googleAuthR::googleAuthUI("gauth_login")),
@@ -105,7 +106,7 @@ navbarPage(
                  hr(),
                  htmlOutput("friends"),
                  br(),
-                 p("Using your past paper rankings, these are the five users that have the most similar taste in preprints to you."),
+                 p("Using your past paper rankings, these are the users that have the most similar taste in preprints to you."),
                  p("Follow them, tweet at them, collaborate with them, write a new paper for people to rate on Papr!")
              )
             )
