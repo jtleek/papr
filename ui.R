@@ -4,18 +4,23 @@ library(shinythemes)
 library(plotly)
 
 navbarPage(
-  title = "papr",
+  title = div(img(src="images/dark_logo_small.png", style="margin-top: -8px;", height = 40)),
   tabPanel(
-    "Login",
-    shinyjs::useShinyjs(),
-    sidebarLayout(
-      sidebarPanel(p("Welcome! Log in with Google to log your results."),
-                   googleAuthR::googleAuthUI("gauth_login"),
-                   br(),
-                   p("Consider entering your name & twitter handle to link with other users"),
-                   textInput("name","Name"),
-                   textInput("twitter","Twitter handle")),
-      mainPanel(textOutput("display_username")))
+    "Profile",
+    fluidPage(
+      shinyjs::useShinyjs(),
+      div(id = "profile", class = "card",
+          h3("Welcome to Papr"),
+          hr(),
+          p(textOutput("display_username")),
+          p( googleAuthR::googleAuthUI("gauth_login")),
+          hr(),
+          p("Consider entering your name & twitter handle so we can link you with other users"),
+          textInput("name","Name"),
+          textInput("twitter","Twitter handle"),
+          hr()
+      ) #end div
+    ) #end fluidpage
   ),
   tabPanel("Rate",
            sidebarLayout(
@@ -30,35 +35,28 @@ navbarPage(
                HTML(
                   "<table style='line-height:1.5em;'>
                     <tr>
-                      <td style='font-weight:normal;'><i class = 'fa fa-arrow-right fa-2x' aria-hidden='true'></td>
-                      <td style='font-weight:normal;'>Exciting and Correct
-                        <i class = 'fa fa-star' aria-hidden='true'></i>
+                      <td style='font-weight:normal;'><img src = 'images/swipe_right.png', style='height: 40px'></td>
+                      <td style='font-weight:normal;'> Exciting and Correct
                       </td>
                     </tr>
                     <tr>
-                      <td><i class = 'fa fa-arrow-up fa-2x' aria-hidden='true'></i></td>
-                      <td>Exciting and Questionable
-                        <i class = 'fa fa-volume-up' aria-hidden='true'></i>
+                      <td><img src = 'images/swipe_up.png', style='height: 40px'></td>
+                      <td> Exciting and Questionable
                       </td>
                     </tr>
                     <tr>
-                      <td><i class = 'fa fa-arrow-down fa-2x' aria-hidden='true'></td>
-                      <td>Boring and Correct
-                        <i class = 'fa fa-check' aria-hidden='true'></i>
+                      <td><img src = 'images/swipe_down.png', style='height: 40px'></td>
+                      <td> Boring and Correct
                       </td>
                     </tr>
                     <tr>
-                      <td><i class = 'fa fa-arrow-left fa-2x' aria-hidden='true'></i></td>
-                      <td>Boring and Questionable
-                        <i class = 'fa fa-trash' aria-hidden='true'></i>
+                      <td><img src = 'images/swipe_left.png', style='height: 40px'></td>
+                      <td> Boring and Questionable
                       </td>
                     </tr>
                   </table>"
                ),
                hr(),
-               # h3(""),
-               # swiperButton("myswiper"), #Place our swiper button here, but again, we hide it.
-               # hr(),
                h3("Rate papers & level up:"),
                uiOutput("icon"),
                em(textOutput("level")),
@@ -69,7 +67,7 @@ navbarPage(
                a(href = "https://www.facebook.com/sharer/sharer.php?u=https%3A//jhubiostatistics.shinyapps.io/papr", icon("facebook"))
                ),
              mainPanel(fluidPage(
-               div(id = "swipeCard", 
+               div(id = "swipeCard", class = "card",  
                    h3(id = "cardTitle", "Title"),
                    hr(),
                    p(id = "cardAbstract", "Abstract content")
@@ -78,7 +76,7 @@ navbarPage(
              )),
   tabPanel("What do I like?",
            fluidPage(
-             div(id = "PCA_discussion",
+             div(id = "PCA_discussion", class = "card",
                h3("How we give you papers"),
                  hr(),
                  p("There are a lot of preprints out there. In an ideal world you could read them all, but you have things to do other than sit around an read abstracts all day."),
@@ -100,14 +98,32 @@ navbarPage(
              ) #end div
             ) #end fluidpage
           ),   #end tab
-  tabPanel("Who likes similar papers?",
+  tabPanel("Who's most like me?",
            fluidPage(
-             h3("Follow fellow papr users that like similar papers:"),
-             htmlOutput("friends"))),
+             div(class = "card static",  
+                 h3("Most similar Papr users to you."),
+                 hr(),
+                 htmlOutput("friends"),
+                 br(),
+                 p("Using your past paper rankings, these are the five users that have the most similar taste in preprints to you."),
+                 p("Follow them, tweet at them, collaborate with them, write a new paper for people to rate on Papr!")
+             )
+            )
+          ),
   tabPanel("About",
-           fluidPage(includeMarkdown("./about.md"))),
+           fluidPage(
+             div(id = "about", class = "card",  
+                 includeMarkdown("./about.md")
+             )
+             )
+           ),
   tabPanel("Help",
-           fluidPage(includeMarkdown("./help.md"))),
+           fluidPage(
+             div(class = "card",  
+              includeMarkdown("./help.md")
+              )
+             )
+           ),
   collapsible = TRUE,
   windowTitle = "papr - peer review, but easier"
 )
