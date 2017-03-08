@@ -171,11 +171,15 @@ shinyServer(function(input, output, session) {
   #output friends!
 
   output$friends <- renderText({
+    #remove you!
+    twitter %>%
+      filter(twitter != input$twitter) -> twitter
     #find users closest to you
+    
     friend_dist <- data.frame(name = as.character(twitter$name), twitter = as.character(twitter$twitter), dist = as.vector(sqrt(
-      (as.numeric(isolate(rv$pc)[1]) - twitter[,"PC1"]) ^ 2 +
-        (as.numeric(isolate(rv$pc)[2]) - twitter[,"PC2"]) ^ 2 +
-        (as.numeric(isolate(rv$pc)[3]) - twitter[,"PC3"]) ^ 2
+      (as.numeric(rv$pc[1]) - twitter[,"PC1"]) ^ 2 +
+        (as.numeric(rv$pc[2]) - twitter[,"PC2"]) ^ 2 +
+        (as.numeric(rv$pc[3]) - twitter[,"PC3"]) ^ 2
     )), stringsAsFactors = FALSE)
     friend_handle <- arrange(friend_dist,dist)[1:5,2]
     friend_name <- arrange(friend_dist,dist)[1:5,1]
