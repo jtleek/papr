@@ -179,16 +179,13 @@ shinyServer(function(input, output, session) {
     )), stringsAsFactors = FALSE)
     friend_handle <- arrange(friend_dist,dist)[1:5,2]
     friend_name <- arrange(friend_dist,dist)[1:5,1]
-    friend_handle[is.na(friend_handle)]<- friend_name[is.na(friend_name)]<-"LFODichotomize"
+    friend_handle <- friend_handle[complete.cases(friend_handle)]
+    friend_name <- friend_name[complete.cases(friend_name)]
     follow <- function(who, where){
       paste0(who,": <a href='https://twitter.com/",where,
              "' class='twitter-follow-button' data-show-count='false'>Follow @",where,"</a><script async src='//platform.twitter.com/widgets.js' charset='utf-8'></script><br>")
     }
-    paste0(follow(friend_name[1],friend_handle[1]),
-           follow(friend_name[2],friend_handle[2]),
-           follow(friend_name[3],friend_handle[3]),
-           follow(friend_name[4],friend_handle[4]),
-           follow(friend_name[5],friend_handle[5]))
+    follow(friend_name,friend_handle)
        })
   
   ## Workaround to avoid shinyaps.io URL problems
