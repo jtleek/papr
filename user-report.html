@@ -125,12 +125,13 @@ $(document).ready(function () {
 
 <pre class="r"><code>#read in data
 files &lt;- drop_dir(&quot;shiny/2016/papr/user_dat/&quot;)$path</code></pre>
-<pre><code>## # A tibble: 3 × 5
+<pre><code>## # A tibble: 4 × 5
 ##                                                                      path
 ## *                                                                   &lt;chr&gt;
 ## 1 /shiny/2016/papr/user_dat/user_dat_6e03dc1600908901aac8b17283f8be90.csv
 ## 2 /shiny/2016/papr/user_dat/user_dat_85decdee18df7ec17e0f0d8fc3931fdb.csv
 ## 3                            /shiny/2016/papr/user_dat/user_dat_12345.csv
+## 4 /shiny/2016/papr/user_dat/user_dat_be01e7de2e7c0e76b781bbbd53b61f0c.csv
 ## # ... with 4 more variables: mime_type &lt;chr&gt;, root &lt;chr&gt;, bytes &lt;int&gt;,
 ## #   modified &lt;chr&gt;</code></pre>
 <pre class="r"><code>tbl &lt;- lapply(files, drop_read_csv) %&gt;% 
