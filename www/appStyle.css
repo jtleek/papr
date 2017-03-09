@@ -20,6 +20,14 @@
   border-radius: 5px; /* 5px rounded corners */
 }
 
+table {
+  border-collapse: separate;
+}
+
+td {
+  padding-right: 10px;
+}
+
 .swipe-left {
     -webkit-animation: swipe-left 1s forwards;
             animation: swipe-left 1s forwards;
