@@ -7,6 +7,10 @@
   margin: 0 auto;
 }
 
+#rate_wrapper{
+  max-width: 800px;
+  margin: 0 auto;
+}
 
 #paper_info :hover {
   cursor: pointer;
@@ -27,6 +31,7 @@ table {
 td {
   padding-right: 10px;
 }
+
 
 .swipe-left {
     -webkit-animation: swipe-left 1s forwards;
