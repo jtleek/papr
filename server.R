@@ -152,6 +152,7 @@ shinyServer(function(input, output, session) {
   userDetails <- reactive({
     validate(need(accessToken(), "not logged in"))
     rv$login <- TRUE #Record the user as logged in
+    print("setting user as active")
     details <-
       with_shiny(get_user_info, shiny_access_token = accessToken())  #grab the user info
     rv$person_id <-
@@ -164,8 +165,14 @@ shinyServer(function(input, output, session) {
   
   # Start datastore and display user's Google display name after successful login
   output$display_username <- renderText({
+
     validate(need(userDetails(), "getting user details"))
-    paste("Welcome,", userDetails()$displayName) #return name after validation
+    
+    if(rv$login){
+      paste("You're logged in with Google!") #return name after validation
+    } else {
+      "Log in to keep track of rankings!"
+    }
   })
   
   #output friends!
