@@ -1,8 +1,12 @@
 papa-drop.rds
 *.rds
+*.Rproj
 .DS_Store
 .Rhistory
 .Rprofile
 .Rapp.history
 papr-drop.rds
 rsconnect/
+.Rproj.user
+google_api_info.R
+rec_matrix.Rda
