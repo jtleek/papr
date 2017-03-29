@@ -281,7 +281,7 @@ shinyServer(function(input, output, session) {
       test_pca,
       x = ~ PC1,
       y = ~ PC2,
-      z = ~ PC3,
+    #  z = ~ PC3,
       text = ~ paste('Title:', titles),
       marker = list(
         mode = "marker",
@@ -294,16 +294,17 @@ shinyServer(function(input, output, session) {
       add_trace(
         x = as.numeric(test_pca[1, 1]),
         y = as.numeric(test_pca[1, 2]),
-        z = as.numeric(test_pca[1, 3]),
-        type = "scatter3d",
+      # z = as.numeric(test_pca[1, 3]),
+      # type = "scatter3d",
+        type = "scatter",
         text = "You are here",
         mode = "text",
         name = "Click here to hide/show your location"
       ) %>%
       layout(scene = list(
         xaxis = list(title = 'PC1'),
-        yaxis = list(title = 'PC2'),
-        zaxis = list(title = 'PC3')
+        yaxis = list(title = 'PC2')
+       # zaxis = list(title = 'PC3')
       ))
   })
 })
