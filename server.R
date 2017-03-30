@@ -9,6 +9,7 @@ library(googleID)
 library(shiny)
 library(plotly)
 library(shinysense)
+
 source("google_api_info.R")
 
 shinyServer(function(input, output, session) {
@@ -66,6 +67,7 @@ shinyServer(function(input, output, session) {
   #Need to be wrapped in reactiveValues to make sure their updates propigate
   rv <- reactiveValues(
     login = FALSE,
+    terms_accepted = FALSE,
     person_id = 12345,
     counter = -1,
     pc = colMeans(term_pca_df[1:3]),
@@ -82,7 +84,8 @@ shinyServer(function(input, output, session) {
   #make a popup that alerts the user that we have super important data terms
   #don't show the popup if the user is logged in though. 
   observe({
-    make_popup <- callModule(shinypopup, "terms", accepted = rv$login)
+    # print(paste("running make popup with the value", rv$login))
+    # make_popup <- callModule(shinypopup, "terms", accepted = rv$terms_accepted)
   })
  
   #########################################################################################################
@@ -102,7 +105,7 @@ shinyServer(function(input, output, session) {
     } else if (runif(1) < .75 & !deciding) {
       new_ind <- sample(rec(choice = choice, output = "recs"), 1)
       rv$pc <- rec(choice = choice, output = "user_PC")
-      print("using our sweet recommendor")
+      # print("using our sweet recommendor")
     } else {
       new_ind <-
         sample(vals[-which(vals %in% isolate(rv$user_dat$index))], 1) #randomly grab a new paper but ignore the just read one
@@ -156,15 +159,26 @@ shinyServer(function(input, output, session) {
   
   #Goes into google's oauth and pulls down identity
   userDetails <- reactive({
+    
+
+
+    
     validate(need(accessToken(), "not logged in"))
+    
+    if(rv$login){
+      print(paste("running make popup with the value", TRUE))
+      make_popup <- callModule(shinypopup, "terms", accepted = T)
+    } else {
+      print(paste("running make popup with the value", FALSE))
+      make_popup <- callModule(shinypopup, "terms", accepted = F)
+    }
+    
     rv$login <- TRUE #Record the user as logged in
     print("setting user as active")
-    details <-
-      with_shiny(get_user_info, shiny_access_token = accessToken())  #grab the user info
-    rv$person_id <-
-      digest::digest(details$id) #assign the user id to our reactive variable
-     if(isolate(rv$person_id) != 12345 & drop_exists(paste0("shiny/2016/papr/user_dat/user_dat_",isolate(rv$person_id),".csv"), dtoken = token)){
-       rv$pc <- as.numeric(drop_read_csv(paste0("shiny/2016/papr/user_dat/user_dat_",isolate(rv$person_id),".csv"))[,3:5], dtoken = token)
+    details <- with_shiny(get_user_info, shiny_access_token = accessToken())  #grab the user info
+    rv$person_id <- digest::digest(details$id) #assign the user id to our reactive variable
+    if(isolate(rv$person_id) != 12345 & drop_exists(paste0("shiny/2016/papr/user_dat/user_dat_",isolate(rv$person_id),".csv"), dtoken = token)){
+      rv$pc <- as.numeric(drop_read_csv(paste0("shiny/2016/papr/user_dat/user_dat_",isolate(rv$person_id),".csv"))[,3:5], dtoken = token)
     }
     details #return user information
   })
@@ -217,26 +231,17 @@ shinyServer(function(input, output, session) {
     }
   })
   
-  #If the user clicks skip paper, load some new stuff.
-  # observeEvent(input$skip,{
-  #   choice = "skipped"
-  #   ind             = rate_paper(choice,file_path,rv) #select the skip option
-  #   output$title    = renderText(dat$titles[ind])
-  #   output$abstract = renderText(dat$abstracts[ind])
-  #   output$authors  = renderText(dat$authors[ind])
-  #   output$link     = renderUI({ a(href=dat$links[ind],dat$links[ind]) })
-  # })
-  
+
   #On the interaction with the swipe card do this stuff
   observeEvent(input$cardSwiped, {
     #Get swipe results from javascript
     swipeResults <- input$cardSwiped
-    print(swipeResults)
+    # print(swipeResults)
     
     if (!(swipeResults %in% c("skipped", "deciding"))) {
       #Send this swipe result to the rating function to get a new index for a new paper
       ind <- rate_paper(swipeResults, file_path, rv)
-      print(paste("ind:", ind))
+      # print(paste("ind:", ind))
       
       selection <- dat[ind, ] #grab info on new paper
       session$sendCustomMessage(type = "sendingpapers", selection) #send it over to javascript
