@@ -14,9 +14,9 @@ navbarPage(
     "Profile",
     fluidPage(
       shinyjs::useShinyjs(),
-      shinypopupUI("terms",
-        buttonText = "I understand, let's get swiping!",
-        popupDiv = terms_content_div,
+      # shinypopupUI("terms",
+      #   buttonText = "I understand, let's get swiping!",
+      #   popupDiv = terms_content_div,
         div(id = "profile", class = "card",
             h3("Welcome to Papr"),
             em("Think of this as 'Tinder for pre-prints'. If you don't know what Tinder is, think of it as a web app for collecting gut-reactions to pre-prints from the scientific community. Enter your information below and click on the “Rate” tab to begin rating papers."),
@@ -34,7 +34,7 @@ navbarPage(
             textInput("twitter","Twitter handle"),
             hr()
         ) #end div
-      ) #end popup div
+      # ) #end popup div
     ) #end fluidpage
   ),
   tabPanel("Rate",
@@ -83,11 +83,15 @@ navbarPage(
                               a(href = "https://www.facebook.com/sharer/sharer.php?u=https%3A//jhubiostatistics.shinyapps.io/papr", icon("facebook"))
                               ),
                  mainPanel(fluidPage(
-                   div(id = "swipeCard", class = "card",  
-                       h3(id = "cardTitle", "Title"),
-                       hr(),
-                       p(id = "cardAbstract", "Abstract content")
-                   )
+                   shinypopupUI("terms",
+                                buttonText = "I understand, let's get swiping!",
+                                popupDiv = terms_content_div,
+                                 div(id = "swipeCard", class = "card",  
+                                     h3(id = "cardTitle", "Title"),
+                                     hr(),
+                                     p(id = "cardAbstract", "Abstract content")
+                                 )
+                   )#end popup
                  ))
                  )
                )
