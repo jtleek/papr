@@ -8,7 +8,7 @@ library(googleAuthR)
 library(googleID)
 library(shiny)
 library(plotly)
-
+library(shinysense)
 source("google_api_info.R")
 
 shinyServer(function(input, output, session) {
@@ -79,9 +79,12 @@ shinyServer(function(input, output, session) {
     )
   )
   
-  # The server side function of the shiny module for terms
-  terms_of_use <- callModule(shinypopup, "terms")
-  
+  #make a popup that alerts the user that we have super important data terms
+  #don't show the popup if the user is logged in though. 
+  observe({
+    make_popup <- callModule(shinypopup, "terms", accepted = rv$login)
+  })
+ 
   #########################################################################################################
   # Function for rating a given paper.
   #########################################################################################################
