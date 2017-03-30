@@ -159,22 +159,10 @@ shinyServer(function(input, output, session) {
   
   #Goes into google's oauth and pulls down identity
   userDetails <- reactive({
-    
-
-
-    
     validate(need(accessToken(), "not logged in"))
     
-    # if(rv$login){
-    #   print(paste("running make popup with the value", TRUE))
-    #   make_popup <- callModule(shinypopup, "terms", accepted = T)
-    # } else {
-    #   print(paste("running make popup with the value", FALSE))
-    #   make_popup <- callModule(shinypopup, "terms", accepted = F)
-    # }
-    
     rv$login <- TRUE #Record the user as logged in
-    # print("setting user as active")
+
     details <- with_shiny(get_user_info, shiny_access_token = accessToken())  #grab the user info
     rv$person_id <- digest::digest(details$id) #assign the user id to our reactive variable
     if(isolate(rv$person_id) != 12345 & drop_exists(paste0("shiny/2016/papr/user_dat/user_dat_",isolate(rv$person_id),".csv"), dtoken = token)){
