@@ -2,7 +2,7 @@ library(shiny)
 library(markdown)
 library(shinythemes)
 library(plotly)
-# devtools::install_github("nstrayer/shinysense", ref = "popup")
+# devtools::install_github("nstrayer/shinysense")
 library(shinysense)
 
 #Load our terms content to put into the terms popup
