@@ -10,3 +10,4 @@ rsconnect/
 .Rproj.user
 google_api_info.R
 rec_matrix.Rda
+.httr-oauth
