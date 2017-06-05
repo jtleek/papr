@@ -11,7 +11,7 @@ $(function() {
   Shiny.addCustomMessageHandler("sendingpapers",
     function(data) {
       console.log(data);
-      set_card(data.titles[0], data.abstracts[0])
+      set_card(data.title[0], data.abstract[0])
     }
   );
 

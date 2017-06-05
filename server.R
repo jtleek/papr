@@ -105,7 +105,7 @@ shinyServer(function(input, output, session) {
     } else if (runif(1) < .75 & !deciding) {
       new_ind <- sample(rec(choice = choice, output = "recs"), 1)
       rv$pc <- rec(choice = choice, output = "user_PC")
-      # print("using our sweet recommendor")
+      print("using our sweet recommendor")
     } else {
       new_ind <-
         sample(vals[-which(vals %in% isolate(rv$user_dat$index))], 1) #randomly grab a new paper but ignore the just read one
@@ -114,8 +114,8 @@ shinyServer(function(input, output, session) {
     #Make a new row for our session data.
     new_row <- data.frame(
       index   = new_ind,
-      title   = dat$titles[dat$index == new_ind],
-      link    = dat$links[dat$index == new_ind],
+      title   = dat$title[dat$index == new_ind],
+      link    = dat$url[dat$index == new_ind],
       session = session_id,
       result  = NA,
       person  = isolate(rv$person_id)
@@ -273,12 +273,12 @@ shinyServer(function(input, output, session) {
                              PC3 = rv$pc[3], 
                              PC4 = NA,
                              PC5 = NA,
-                             titles = "Your Average",
+                             title = "Your Average",
                              index = 999999)
     rbind(user_pc_df, term_pca_df) %>%
       mutate(
-        color = ifelse(titles == "Your Average", "purple", "lightblue"),
-        size = ifelse(titles == "Your Average", 20, 5)
+        color = ifelse(title == "Your Average", "purple", "lightblue"),
+        size = ifelse(title == "Your Average", 20, 5)
       ) -> test_pca
     
     plot_ly(
@@ -286,7 +286,7 @@ shinyServer(function(input, output, session) {
       x = ~ PC1,
       y = ~ PC2,
     #  z = ~ PC3,
-      text = ~ paste('Title:', titles),
+      text = ~ paste('Title:', title),
       marker = list(
         mode = "marker",
         color = ~ color,

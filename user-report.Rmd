@@ -12,15 +12,23 @@ library(dplyr)
 token <- readRDS("./papr-drop.rds")
 ```
 
-```{r data, message = FALSE, warning = FALSE}
+```{r data, message = FALSE, warning = FALSE, results = "hide"}
 #read in data
 files <- drop_dir("shiny/2016/papr/user_dat/", dtoken = token)$path
 tbl <- lapply(files, drop_read_csv, dtoken = token) %>% 
-  bind_rows() %>%
+  bind_rows()
+```
+
+```{r}
+knitr::kable(tbl)
+```
+
+```{r}
+tbl_twitter <- tbl %>%
   filter(!is.na(twitter))
 
 file_path <- file.path(tempdir(), "twitter.csv")
-write_csv(tbl, file_path)
+write_csv(tbl_twitter, file_path)
 drop_upload(file_path, "shiny/2016/papr/comb_dat", dtoken = token)
 ```
 
