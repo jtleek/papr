@@ -380,11 +380,10 @@ shinyServer(function(input, output, session) {
     user_pc_df <- data_frame(PC1 = rv$pc[1],
                              PC2 = rv$pc[2],
                              PC3 = rv$pc[3], 
-                             PC4 = NA,
-                             PC5 = NA,
                              title = "Your Average",
                              index = 999999)
-    test_pca <- rbind(user_pc_df, term_pca_df) %>%
+    test_pca <- term_pca_df %>%
+      bind_rows(user_pc_df) %>%
       mutate(
         color = ifelse(title == "Your Average", "purple", "lightblue"),
         size = ifelse(title == "Your Average", 20, 5)
