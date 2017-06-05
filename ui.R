@@ -52,7 +52,7 @@ navbarPage(
                                 "<table style='line-height:1.5em;'>
                                 <tr>
                                 <td style='font-weight:normal;'><img src = 'images/swipe_right.png', style='height: 40px'></td>
-                                <td style='font-weight:normal;'> Exciting and Correct
+                                <td style='font-weight:normal;'> Exciting and Probable
                                 </td>
                                 </tr>
                                 <tr>
@@ -62,7 +62,7 @@ navbarPage(
                                 </tr>
                                 <tr>
                                 <td><img src = 'images/swipe_down.png', style='height: 40px'></td>
-                                <td> Boring and Correct
+                                <td> Boring and Probable
                                 </td>
                                 </tr>
                                 <tr>

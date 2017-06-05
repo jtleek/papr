@@ -20,13 +20,13 @@ shinyServer(function(input, output, session) {
              user_dat_index = isolate(rv$user_dat$index),
              index =  isolate(rv$user_dat$index)[1],
              count = isolate(rv$counter),
-             choice = "exciting and correct",
+             choice = "exciting and probable",
              output = "user_PC") {
       #remove columns we've already seen
-      if (choice %in% c("exciting and correct", "exciting and questionable")) {
+      if (choice %in% c("exciting and probable", "exciting and questionable")) {
         user_PC <- colMeans(rbind(user_PC, x[x$index == index, 1:3]))/(count+1)
       }
-      if (choice %in% c("boring and correct", "boring and questionable")) {
+      if (choice %in% c("boring and probable", "boring and questionable")) {
         user_PC <- colMeans(rbind(user_PC,-x[x$index == index, 1:3]))/(count+1)
       }
       if (output == "user_PC") {
