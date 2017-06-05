@@ -22,7 +22,7 @@ col_author <- function(x) {
 dat_new <- text$data %>%
   select(title, url = URL, issued, author, abstract) %>%
   mutate(authors = purrr::map_chr(author, col_author),
-         abstract = gsub("<jats:p>|</jats:p>", "", abstract),
+         abstract = gsub("<jats:.*?>|</jats:.*?>", "", abstract),
          issued = as.Date(issued)) %>%
   select(-author) %>%
   distinct(title, .keep_all = TRUE)
@@ -39,6 +39,7 @@ dat <- dat %>%
   bind_rows(dat_new) %>%
   distinct(title, .keep_all = TRUE) %>%
   mutate(index = 1:n())
+
 
 save(dat, file = "biorxiv_data.Rda")
 
