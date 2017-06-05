@@ -14,8 +14,8 @@ token <- readRDS("./papr-drop.rds")
 
 ```{r data, message = FALSE, warning = FALSE}
 #read in data
-files <- drop_dir("shiny/2016/papr/user_dat/")$path
-tbl <- lapply(files, drop_read_csv) %>% 
+files <- drop_dir("shiny/2016/papr/user_dat/", dtoken = token)$path
+tbl <- lapply(files, drop_read_csv, dtoken = token) %>% 
   bind_rows() %>%
   filter(!is.na(twitter))
 

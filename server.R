@@ -87,7 +87,7 @@ shinyServer(function(input, output, session) {
   #   # print(paste("running make popup with the value", rv$login))
   #   # make_popup <- callModule(shinypopup, "terms", accepted = rv$terms_accepted)
   # })
-  make_popup <- callModule(shinypopup, "terms", accepted = F)
+  make_popup <- callModule(shinypopup, "terms", accepted = FALSE)
   #########################################################################################################
   # Function for rating a given paper.
   #########################################################################################################
@@ -138,7 +138,12 @@ shinyServer(function(input, output, session) {
     
     file_path2 <-
       file.path(tempdir(), paste0("user_dat_",isolate(rv$person_id), ".csv"))
-    write_csv(data.frame(name = isolate(input$name), twitter = isolate(input$twitter), PC1 = isolate(rv$pc[1]), PC2 = isolate(rv$pc[2]), PC3 = isolate(rv$pc[3])), file_path2)
+    write_csv(data.frame(name = isolate(input$name),
+                         twitter = isolate(input$twitter),
+                         PC1 = isolate(rv$pc[1]), 
+                         PC2 = isolate(rv$pc[2]),
+                         PC3 = isolate(rv$pc[3])),
+              file_path2)
     drop_upload(file_path2,"shiny/2016/papr/user_dat/", dtoken = token)
     
     return(new_ind)
