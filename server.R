@@ -14,13 +14,6 @@ source("google_api_info.R")
 
 ## set some parameters
 level_up <- 4 #Number of papers needed to review to level up.
-## google authentication details
-options(
-  googleAuthR.scopes.selected = c(
-    "https://www.googleapis.com/auth/userinfo.email",
-    "https://www.googleapis.com/auth/userinfo.profile"
-  )
-)
 
 shinyServer(function(input, output, session) {
   
@@ -33,6 +26,14 @@ shinyServer(function(input, output, session) {
   
   ## set up user data
   session_id <- as.numeric(Sys.time())
+  
+  ## google authentication details
+  options(
+    googleAuthR.scopes.selected = c(
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/userinfo.profile"
+    )
+  )
   
   ## variables that get updated throughout the session.
   ## need to be wrapped in reactiveValues to make sure their updates propigate
@@ -275,11 +276,13 @@ shinyServer(function(input, output, session) {
        drop_exists(paste0("shiny/2016/papr/user_dat/user_dat_",
                           isolate(rv$person_id),".csv"),
                    dtoken = token)) {
-      rv$pc <- as.numeric(
-        drop_read_csv(
-          paste0("shiny/2016/papr/user_dat/user_dat_", isolate(rv$person_id),".csv")
-        )[,3:5],
-        dtoken = token)
+      old_user <- drop_read_csv(
+        paste0("shiny/2016/papr/user_dat/user_dat_", isolate(rv$person_id),".csv")
+        ,
+      dtoken = token)
+      rv$pc <- as.numeric(old_user[,3:5])
+      updateTextInput(session, "twitter", value = old_user[, "twitter"] )
+      updateTextInput(session, "name", value = old_user[, "name"])
     }
     details ## return user information
   })
