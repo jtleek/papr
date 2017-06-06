@@ -272,12 +272,11 @@ shinyServer(function(input, output, session) {
     ## assign the user id to our reactive variable, make it random
     rv$person_id <- digest::digest(details$id) 
     
-    if(isolate(rv$person_id) != 12345 && 
-       drop_exists(paste0("shiny/2016/papr/user_dat/user_dat_",
+    if(drop_exists(paste0("shiny/2016/papr/user_dat/user_dat_",
                           isolate(rv$person_id),".csv"),
                    dtoken = token)) {
       old_user <- drop_read_csv(
-        paste0("shiny/2016/papr/user_dat/user_dat_", isolate(rv$person_id),".csv")
+        paste0("shiny/2016/papr/user_dat/user_dat_", rv$person_id,".csv")
         ,
       dtoken = token)
       rv$pc <- as.numeric(old_user[,3:5])
