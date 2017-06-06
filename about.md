@@ -17,7 +17,7 @@ We collect information on your ratings of academic papers on biorxiv through thi
 
 #### Author
 
-It was built by [Jeff Leek](http://jtleek.com/), [Lucy D'Agostino McGowan](http://lucymcgowan.com), and [Nick Strayer](http://nickstrayer.me) as an example of the sort of thing we hope to build with the Johns Hopkins Data Science Lab. If you want a web or mobile app prototyped, consider submitting an app idea for free prototyping at our [Prototyping Shop](http://jhudatascience.org/prototyping/).
+It was built by [Jeff Leek](http://jtleek.com/), [Lucy D'Agostino McGowan](http://lucymcgowan.com), and [Nick Strayer](http://nickstrayer.me) as an example of the sort of thing we hope to build with the Johns Hopkins Data Science Lab. If you want a web or mobile app prototyped, consider submitting an app idea for free prototyping at our [Prototyping Shop](http://jhudatascience.org/prototyping).
 
 #### Terms
 
