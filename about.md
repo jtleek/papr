@@ -13,9 +13,11 @@ When you sign in and swipe with papr we store a two things:
 
 We will be using this data (in future releases) to help figure out what type of papers you like. Knowing this information will allow us to show you papers that are more revelent to your interests but also will let you find other researchers that are most like you (if you choose to make your identity known to the app). A kind of academic sphere of interest. 
 
+We collect information on your ratings of academic papers on biorxiv through this service. These data may be analyzed and released in anonymized form. We will not release data labeled with your social media or gmail accounts. However, you should be aware that it may be possible to identify you from your ratings of papers (we don't know we haven't tried).
+
 #### Author
 
-It was built by [Jeff Leek](http://jtleek.com/), [Lucy D'Agostino McGowan](http://lucymcgowan.com), and [Nick Strayer](http://nickstrayer.me) as an example of the sort of thing we hope to build with the Johns Hopkins Data Science Lab. If you want a web or mobile app prototyped, consider submitting an app idea for free prototyping at our [Prototyping Shop](http://jhudatascience.org/prototyping/).
+It was built by [Jeff Leek](http://jtleek.com/), [Lucy D'Agostino McGowan](http://lucymcgowan.com), and [Nick Strayer](http://nickstrayer.me) as an example of the sort of thing we hope to build with the Johns Hopkins Data Science Lab. If you want a web or mobile app prototyped, consider submitting an app idea for free prototyping at our [Prototyping Shop](http://jhudatascience.org/prototyping).
 
 #### Terms
 

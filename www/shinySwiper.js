@@ -11,7 +11,7 @@ $(function() {
   Shiny.addCustomMessageHandler("sendingpapers",
     function(data) {
       console.log(data);
-      set_card(data.titles[0], data.abstracts[0])
+      set_card(data.title[0], data.abstract[0])
     }
   );
 
@@ -39,12 +39,12 @@ $(function() {
                 swipeCard.addClass("swipe-up");
                 break;
               case "down":
-                decision = "boring and correct";
+                decision = "boring and probable";
                 decision_icon = "<i class = 'fa fa-check fa-5x' aria-hidden='true'></i>"
                 swipeCard.addClass("swipe-down");
                 break;
               case "right":
-                decision = "exciting and correct";
+                decision = "exciting and probable";
                 decision_icon = "<i class = 'fa fa-star fa-5x' aria-hidden='true'></i>"
                 swipeCard.addClass("swipe-right");
                 choice = ""

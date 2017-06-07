@@ -2,6 +2,11 @@ library(shiny)
 library(markdown)
 library(shinythemes)
 library(plotly)
+# devtools::install_github("nstrayer/shinysense")
+library(shinysense)
+
+#Load our terms content to put into the terms popup
+source("terms_content.R")
 
 navbarPage(
   title = div(img(src="images/dark_logo_small.png", style="margin-top: -8px;", height = 40)),
@@ -9,23 +14,27 @@ navbarPage(
     "Profile",
     fluidPage(
       shinyjs::useShinyjs(),
-      div(id = "profile", class = "card",
-          h3("Welcome to Papr"),
-          em("Think of this as 'Tinder for pre-prints'. If you don't know what Tinder is, think of it as a web app for collecting gut-reactions to pre-prints from the scientific community. Enter your information below and click on the “Rate” tab to begin rating papers."),
-          hr(),
-          tags$table(tags$tr(
-            tags$td(googleAuthR::googleAuthUI("gauth_login")),
-            # tags$td(" "),                           #I got that blank space baby, 
-            tags$td(textOutput("display_username")) #and I'll write your name. 
-          )),
-          # p(textOutput("display_username")),
-          # p( googleAuthR::googleAuthUI("gauth_login")),
-          hr(),
-          p("Consider entering your name & twitter handle so we can link you with other users"),
-          textInput("name","Name"),
-          textInput("twitter","Twitter handle"),
-          hr()
-      ) #end div
+      # shinypopupUI("terms",
+      #   buttonText = "I understand, let's get swiping!",
+      #   popupDiv = terms_content_div,
+        div(id = "profile", class = "card",
+            h3("Welcome to Papr"),
+            em("Think of this as 'Tinder for pre-prints'. If you don't know what Tinder is, think of it as a web app for collecting gut-reactions to pre-prints from the scientific community. Enter your information below and click on the “Rate” tab to begin rating papers."),
+            hr(),
+            tags$table(tags$tr(
+              tags$td(googleAuthR::googleAuthUI("gauth_login")),
+              # tags$td(" "),                           #I got that blank space baby, 
+              tags$td(textOutput("display_username")) #and I'll write your name. 
+            )),
+            # p(textOutput("display_username")),
+            # p( googleAuthR::googleAuthUI("gauth_login")),
+            hr(),
+            p("Consider entering your name & twitter handle so we can link you with other users"),
+            textInput("name","Name"),
+            textInput("twitter","Twitter handle"),
+            hr()
+        ) #end div
+      # ) #end popup div
     ) #end fluidpage
   ),
   tabPanel("Rate",
@@ -43,7 +52,7 @@ navbarPage(
                                 "<table style='line-height:1.5em;'>
                                 <tr>
                                 <td style='font-weight:normal;'><img src = 'images/swipe_right.png', style='height: 40px'></td>
-                                <td style='font-weight:normal;'> Exciting and Correct
+                                <td style='font-weight:normal;'> Exciting and Probable
                                 </td>
                                 </tr>
                                 <tr>
@@ -53,7 +62,7 @@ navbarPage(
                                 </tr>
                                 <tr>
                                 <td><img src = 'images/swipe_down.png', style='height: 40px'></td>
-                                <td> Boring and Correct
+                                <td> Boring and Probable
                                 </td>
                                 </tr>
                                 <tr>
@@ -74,11 +83,15 @@ navbarPage(
                               a(href = "https://www.facebook.com/sharer/sharer.php?u=https%3A//jhubiostatistics.shinyapps.io/papr", icon("facebook"))
                               ),
                  mainPanel(fluidPage(
-                   div(id = "swipeCard", class = "card",  
-                       h3(id = "cardTitle", "Title"),
-                       hr(),
-                       p(id = "cardAbstract", "Abstract content")
-                   )
+                   shinypopupUI("terms",
+                                buttonText = "I understand, let's get swiping!",
+                                popupDiv = terms_content_div,
+                                 div(id = "swipeCard", class = "card",  
+                                     h3(id = "cardTitle", "Title"),
+                                     hr(),
+                                     p(id = "cardAbstract", "Abstract content")
+                                 )
+                   )#end popup
                  ))
                  )
                )
