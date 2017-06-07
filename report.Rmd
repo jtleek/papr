@@ -1,0 +1,53 @@
+---
+title: "papr user report"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(rdrop2)
+library(readr)
+library(dplyr)
+token <- readRDS("./papr-drop.rds")
+```
+
+```{r, message = FALSE, warning = FALSE, results = "hide"}
+#read in data
+files <- drop_dir("shiny/2016/papr/user_dat/", dtoken = token)$path
+tbl <- lapply(files, drop_read_csv, dtoken = token) %>% 
+  bind_rows()
+
+tbl_twitter <- tbl %>%
+  filter(!is.na(twitter)) %>%
+  mutate(twitter = gsub("https://twitter.com/","",twitter)) ## some people seem to do this :(
+
+file_path <- file.path(tempdir(), "twitter.csv")
+write_csv(tbl_twitter, file_path)
+drop_upload(file_path, "shiny/2016/papr/comb_dat", dtoken = token)
+```
+
+Row
+-----------------------------------------------------------------------
+
+### Total users logged in {.value-box}
+
+```{r}
+valueBox(
+  value = nrow(tbl),
+  icon = "fa-sign-in"
+)
+```
+
+### Total users input twitter handle {.value-box}
+
+
+```{r}
+valueBox(
+  value = nrow(tbl_twitter),
+  icon = "fa-twitter"
+)
+```
