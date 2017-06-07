@@ -109,11 +109,11 @@ navbarPage(
                    ),
                  p(
                    span("In more technical terms what we do is take every abstract in our database and record how many times different words occur. We then take this very large dimensional data (each abstract has a column for every unique word we saw in all of the abstracts), and use a technique known as"),
-                   a(href = "https://en.wikipedia.org/wiki/Principal_component_analysis", "Principle Components Analysis (PCA)"),
+                   a(href = "https://en.wikipedia.org/wiki/Principal_component_analysis", "Principal Components Analysis (PCA)"),
                    span("on it to attempt to simplify these thousands of words down to a few key patterns.")
                  ),
                  p(
-                   span("Below is the raw data that we use to show you a given paper. Each blue dot represents one of the abstracts in our database plotted in the first three principle components. We start you at a random position in this cloud and when you like a paper we move your dot towards that given paper. The next abstract we select for you is then more likely to be drawn from the 'neighborhood' around your dot."),
+                   span("Below is the raw data that we use to show you a given paper. Each blue dot represents one of the abstracts in our database plotted in the first three principal components. We start you at a random position in this cloud and when you like a paper we move your dot towards that given paper. The next abstract we select for you is then more likely to be drawn from the 'neighborhood' around your dot."),
                    span("Please explore! See if you can notice trends in the cloud of abstracts. Does your position make sense to you in the context of it's surroundings? The more abstracts you rate the better our estimates of your tastes will be!")
                  ),
                plotlyOutput("plotly")
