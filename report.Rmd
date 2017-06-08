@@ -1,9 +1,8 @@
 ---
 title: "papr user report"
 output: 
-  flexdashboard::flex_dashboard:
-    orientation: columns
-    vertical_layout: fill
+  flexdashboard::flex_dashboard: 
+    orientation: rows
 runtime: shiny
 ---
 
@@ -12,22 +11,106 @@ library(flexdashboard)
 library(rdrop2)
 library(readr)
 library(dplyr)
+library(purrr)
+library(ggplot2)
+library(lubridate)
 token <- readRDS("./papr-drop.rds")
 ```
 
 ```{r, message = FALSE, warning = FALSE, results = "hide"}
 #read in data
-files <- drop_dir("shiny/2016/papr/user_dat/", dtoken = token)$path
-tbl <- lapply(files, drop_read_csv, dtoken = token) %>% 
-  bind_rows()
+files_md <- drop_dir("shiny/2016/papr/comb_dat/", dtoken = token) %>%
+  mutate(modified = as.POSIXct(modified, format="%a, %d %b %Y %H:%M:%S"))
 
-tbl_twitter <- tbl %>%
-  filter(!is.na(twitter)) %>%
-  mutate(twitter = gsub("https://twitter.com/","",twitter)) ## some people seem to do this :(
+all_data_md <- files_md %>%
+  filter(grepl("all-data", path)) %>%
+  arrange(desc(modified))
 
-file_path <- file.path(tempdir(), "twitter.csv")
-write_csv(tbl_twitter, file_path)
+all_data_path <- all_data_md %>%
+  select(path) %>%
+  slice(1) %>%
+  as.character()
+all_data_file <- drop_read_csv(all_data_path, dtoken = token, stringsAsFactors = FALSE) %>%
+  mutate(date_ = as.POSIXct(date, format="%a, %d %b %Y %H:%M:%S")) 
+
+login_path <- "/shiny/2016/papr/comb_dat/login.csv"
+login_md <- files_md %>%
+  filter(path == login_path)
+
+login_file <- drop_read_csv("/shiny/2016/papr/comb_dat/login.csv", dtoken = token, stringsAsFactors = FALSE)
+
+user_files <- drop_dir("shiny/2016/papr/user_dat/", dtoken = token) %>%
+  mutate(modified = as.POSIXct(modified, format="%a, %d %b %Y %H:%M:%S")) 
+
+new_files_md <- user_files %>%
+  filter(modified > (login_md$modified + 120))
+
+new_files <- map_df(new_files_md$path, drop_read_csv, dtoken = token, stringsAsFactors = FALSE)
+
+twitter_file <- drop_read_csv("/shiny/2016/papr/comb_dat/twitter.csv", dtoken = token, stringsAsFactors = FALSE)
+
+if (nrow(new_files) != 0L) {
+  tbl <- new_files %>%
+    bind_rows(login_file) %>%
+    distinct()
+  
+  tbl_twitter <- new_files %>%
+    mutate(twitter = gsub("https://twitter.com/","",twitter)) %>% ## some people seem to do this :(
+    filter(!is.na(twitter)) %>%
+    bind_rows(twitter_file) %>%
+    distinct()
+  
+  
+  file_path <- file.path(tempdir(), "twitter.csv")
+  write_csv(tbl_twitter, file_path)
+  drop_upload(file_path, "shiny/2016/papr/comb_dat", dtoken = token)
+  
+  file_path <- file.path(tempdir(), "login.csv")
+  write_csv(tbl, file_path)
+  drop_upload(file_path, "shiny/2016/papr/comb_dat", dtoken = token)
+} else {
+  tbl <- login_file
+  tbl_twitter <- twitter_file
+}
+```
+
+```{r, message = FALSE, warning= FALSE, results="hide"}
+files <- drop_dir("shiny/2016/papr/", dtoken = token) %>%
+  mutate(modified_ = as.POSIXct(modified, format="%a, %d %b %Y %H:%M:%S")) 
+
+files_csv <- files %>%
+  filter(grepl(".csv", path))
+
+last_session <- all_data_file %>%
+  arrange(desc(date_)) %>%
+  select(date_) %>%
+  slice(1)
+
+new_files_md <- files_csv %>% 
+  filter(modified_ > last_session$date_)
+
+get_files <- function(path, date) {
+  drop_read_csv(path, dtoken = token, stringsAsFactors = FALSE) %>%
+    mutate(date = date,
+           person = as.character(person))
+}
+if (nrow(new_files_md) != 0L) {
+new_files <- map2_df(new_files_md$path, new_files_md$modified, get_files)
+
+old_data <- all_data_file %>%
+  select(- date_)
+
+all_data <- new_files %>%
+  bind_rows(old_data)
+
+file_path <- file.path(tempdir(), paste0(Sys.Date(), "_all-data.csv"))
+write_csv(all_data, file_path)
 drop_upload(file_path, "shiny/2016/papr/comb_dat", dtoken = token)
+} else {
+  all_data <- all_data_file
+}
+all_data <- all_data %>%
+  mutate(date_ = as.POSIXct(date, format="%a, %d %b %Y %H:%M:%S")) 
 ```
 
 Row
@@ -44,10 +127,71 @@ valueBox(
 
 ### Total users input twitter handle {.value-box}
 
-
 ```{r}
 valueBox(
   value = nrow(tbl_twitter),
   icon = "fa-twitter"
 )
 ```
+
+
+Row
+-----------------------------------------------------------------------
+
+
+```{r}
+
+to_plot <- all_data %>%
+  group_by(date = as_date(date_)) %>%
+  summarise(n_swipes = n(),
+            n_sessions = n_distinct(session))
+to_plot2 <- all_data %>%
+  group_by(hour = round_date(date_, unit = "hour")) %>%
+  summarise(n_swipes = n(),
+            n_sessions = n_distinct(session)) 
+
+last_date <- all_data %>%
+  select(date_) %>%
+  arrange(desc(date_)) %>%
+  slice(1)
+```
+
+### # of swipes per day 
+
+```{r}
+ggplot(to_plot, aes(x = date, y = n_swipes)) +
+  geom_col() +
+  ylab("# of swipes")
+```
+
+<!-- ### # of sessions per day -->
+
+<!-- ```{r} -->
+
+<!-- ggplot(to_plot, aes(x = date, y = n_sessions)) + -->
+<!--   geom_col() + -->
+<!--   ylab("# of sessions") -->
+<!-- ``` -->
+
+### # of swipes over time
+
+```{r}
+ggplot(to_plot2, aes(x = hour, y = n_swipes)) +
+  geom_line() +
+  xlab("time") +
+  ylab("# of swipes")
+```
+
+### # of sessions over time
+
+```{r}
+ggplot(to_plot2, aes(x = hour, y = n_sessions)) +
+  geom_line() +
+  xlab("time") +
+  ylab("# of sessions")
+```
+
+Row
+-----------------------------------------------------------------------
+
+These data were last updated on `r last_date$date_`.
