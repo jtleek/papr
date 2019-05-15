@@ -104,7 +104,7 @@ navbarPage(
                  p("There are a lot of preprints out there. In an ideal world you could read them all, but you have things to do other than sit around an read abstracts all day."),
                  p(
                    span("In an attempt to help with this we have implemented what is known as a "),
-                   a(href = "https://en.wikipedia.org/wiki/Recommender_system","recomender engine."),
+                   a(href = "https://en.wikipedia.org/wiki/Recommender_system","recommender engine."),
                    span("What this allows us to do is tailor what abstracts we show you based upon your previous abstract rankings.")
                    ),
                  p(
